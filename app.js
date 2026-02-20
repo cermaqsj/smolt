@@ -1,5 +1,5 @@
 // Configuración (DEBES PONER AQUÍ LA URL COMPLETA DEL DESPLIEGUE EXECUTABLE DE GOOGLE APPS SCRIPT)
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVO-g2Z-v2YY9br4_GxMtKu9B8VPUVAz5J9Mdi0NO39ScnYxxwUUBJAyEDR6gGacdp/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5QhAYcMQZMSFfo0d8UcMI5nSIHzrFqwvSF7-EXJ5DuH3c7a-9dfNKxgYuSEAjHgQG/exec";
 
 // Estado Global
 let estanquesData = [];

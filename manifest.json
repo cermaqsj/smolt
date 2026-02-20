@@ -1,0 +1,22 @@
+{
+  "name": "Scanner Estanques CERMAQ",
+  "short_name": "Scanner QR",
+  "description": "Lector inteligente de QR para monitorizar datos de estanques.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=CERMAQ",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=CERMAQ",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

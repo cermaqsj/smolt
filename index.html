@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scanner Estanques PWA</title>
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=CERMAQ">
+
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Librerías Externas -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <div class="glass-bg"></div>
+
+    <main class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1>Monitor de Estanques</h1>
+                <p>Escáner Inteligente CERMAQ</p>
+                <div id="sync-status" class="sync-status syncing">
+                    <span class="status-dot"></span> <span id="sync-text">Sincronizando...</span>
+                </div>
+            </div>
+            <button id="btn-export-all" class="btn-icon" style="display: none;" title="Exportar Todos los Estanques"
+                onclick="exportAllToPDF()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+
+            <!-- Vista 1: Botón Central de Escaneo -->
+            <div id="view-home" class="view active">
+                <div class="home-illustration">
+                    <div class="qr-target-anim">
+                        <div class="corner top-left"></div>
+                        <div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div>
+                        <div class="corner bottom-right"></div>
+                        <svg class="scan-icon" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3M9 9h6v6H9z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h2>¿Listo para escanear?</h2>
+                <p class="subtitle">Apunta la cámara al código QR del estanque para ver los detalles al instante.</p>
+                <button class="btn-primary start-scan-btn" onclick="startScanner()">
+                    Escanear Estanque
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Vista 2: Lector QR Activo -->
+            <div id="view-scanner" class="view">
+                <div class="scanner-wrapper">
+                    <div id="reader"></div>
+                    <button class="btn-close-scanner" onclick="stopScanner()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <p class="scanner-instructions">Enfoca el QR S01 - S20</p>
+            </div>
+
+            <!-- Vista 3: Resultados del Estanque -->
+            <div id="view-result" class="view">
+
+                <div class="result-card" id="pdf-content">
+                    <div class="card-header">
+                        <div class="badge">Estanque</div>
+                        <h2 id="r-estanque">--</h2>
+                        <span class="id-badge" id="r-idqr">S--</span>
+                    </div>
+
+                    <div class="data-grid">
+                        <div class="data-group full-width">
+                            <label>Especie</label>
+                            <p id="r-especie" class="highlight-text">Salmón del Atlántico (Salmo salar)</p>
+                        </div>
+                        <div class="data-group">
+                            <label>Grupo</label>
+                            <p id="r-grupo">--</p>
+                        </div>
+                        <div class="data-group">
+                            <label>Origen</label>
+                            <p id="r-origen">--</p>
+                        </div>
+                        <div class="data-group">
+                            <label>Número de Peces</label>
+                            <p id="r-numero-peces" class="metric">--</p>
+                        </div>
+                        <div class="data-group">
+                            <label>Peso Promedio</label>
+                            <p id="r-peso" class="metric">--</p>
+                        </div>
+                        <div class="data-group">
+                            <label>Biomasa Total</label>
+                            <p id="r-biomasa" class="metric">--</p>
+                        </div>
+                        <div class="data-group">
+                            <label>Densidad</label>
+                            <p id="r-densidad" class="metric">--</p>
+                        </div>
+                        <div class="data-group">
+                            <label>Calibre</label>
+                            <p id="r-calibre">--</p>
+                        </div>
+                        <div class="data-group full-width">
+                            <label>Observaciones/Otros</label>
+                            <p id="r-observaciones">--</p>
+                        </div>
+                    </div>
+
+                    <!-- Footer del reporte para el PDF -->
+                    <div class="report-footer" style="display: none;">
+                        <p>Generado vía App de Monitoreo CERMAQ</p>
+                        <p id="report-date"></p>
+                    </div>
+                </div>
+
+                <div class="action-buttons no-print">
+                    <button class="btn-secondary" onclick="exportIndividualPDF()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Descargar PDF
+                    </button>
+                    <button class="btn-primary" onclick="showView('home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3M9 9h6v6H9z"></path>
+                        </svg>
+                        Escanear Otro
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Notificación emergente -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Hidden div for Full PDF Export -->
+    <div id="full-pdf-container" style="display: none;"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

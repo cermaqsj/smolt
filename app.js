@@ -18,6 +18,7 @@ const btnExportAll = document.getElementById('btn-export-all');
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
     registerServiceWorker();
+    initParticles();
 });
 
 // Función para obtener los datos
@@ -257,4 +258,102 @@ function registerServiceWorker() {
             .then(reg => console.log('SW Registered', reg))
             .catch(err => console.error('SW Error', err));
     }
+}
+
+// --- Particles System ---
+function initParticles() {
+    const canvas = document.getElementById('bg-particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    let particles = [];
+    const numParticles = 40;
+    const colorStr = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+        ? '14, 165, 233'
+        : '56, 189, 248';
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.radius = Math.random() * 2 + 0.5;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > width) this.vx = -this.vx;
+            if (this.y < 0 || this.y > height) this.vy = -this.vy;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${colorStr}, 0.5)`;
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < numParticles; i++) {
+        particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 120) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(${colorStr}, ${0.2 * (1 - distance / 120)})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+// --- PWA Install Logic ---
+let deferredPrompt;
+const installAppBtn = document.getElementById('install-app-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!window.matchMedia('(display-mode: standalone)').matches && installAppBtn) {
+        installAppBtn.style.display = 'flex';
+    }
+});
+
+if (installAppBtn) {
+    installAppBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installAppBtn.style.display = 'none';
+            }
+            deferredPrompt = null;
+        }
+    });
+}
+
+if (window.matchMedia('(display-mode: standalone)').matches && installAppBtn) {
+    installAppBtn.style.display = 'none';
 }

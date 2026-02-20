@@ -25,16 +25,15 @@
 <body>
 
     <div class="glass-bg"></div>
+    <!-- Canvas animado de partículas (Super ligero) -->
+    <canvas id="bg-particles"></canvas>
 
     <main class="app-container">
-        <!-- Header -->
+        <!-- Header Premium -->
         <header class="app-header">
-            <div class="header-logo-container">
-                <img src="Cermaq_logo2.png" alt="Cermaq Logo" class="cermaq-logo">
-            </div>
             <div class="header-content">
-                <h1>Monitor de Estanques</h1>
-                <p>Escáner Inteligente CERMAQ</p>
+                <img src="Cermaq_logo2.png" alt="Cermaq Logo" class="cermaq-logo">
+                <p class="header-subtitle">Intelligent Tank Monitor</p>
                 <div id="sync-status" class="sync-status syncing">
                     <span class="status-dot"></span> <span id="sync-text">Sincronizando...</span>
                 </div>
@@ -73,6 +72,14 @@
                     Escanear Estanque
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <button id="install-app-btn" class="btn-primary install-app-btn" style="display: none;">
+                    Instalar APP (PWA)
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
                 </button>
             </div>

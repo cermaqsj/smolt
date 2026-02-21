@@ -528,58 +528,81 @@ button:active {
 .dashboard-actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
     margin-top: 30px;
+    align-items: center;
 }
 
-.btn-dashboard {
+.action-icons-row {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 12px;
-    padding: 14px 20px;
-    border-radius: 14px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-decoration: none;
+    justify-content: center;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    color: white;
 }
 
-.btn-dashboard:active {
-    transform: scale(0.98);
+.btn-circle:active {
+    transform: scale(0.92);
 }
 
 .btn-sheets {
-    background: #10b981;
-    /* Verde Google Sheets */
-    color: white;
+    background: var(--accent);
+    /* Verde */
 }
 
 .btn-sheets:hover {
     background: #059669;
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
 }
 
 .btn-pdf {
     background: #f43f5e;
-    /* Rojo/Rosado PDF */
-    color: white;
+    /* Rojo */
 }
 
 .btn-pdf:hover {
     background: #e11d48;
+    box-shadow: 0 6px 15px rgba(244, 63, 94, 0.4);
 }
 
-.btn-install {
-    background: var(--surface);
-    color: var(--text-primary);
-    border: 1px solid var(--surface-border);
+.btn-neon-install {
+    margin-top: 30px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    background: transparent;
+    color: var(--primary-light);
+    border: 2px solid var(--primary-light);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2);
+    text-shadow: 0 0 5px rgba(56, 189, 248, 0.6);
+    transition: all 0.3s ease;
 }
 
-.btn-install:hover {
-    background: rgba(255, 255, 255, 0.1);
+.btn-neon-install:hover {
+    background: var(--primary-light);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.4);
+    text-shadow: none;
 }
 
 /* Botón Ver Todos y Detalles */

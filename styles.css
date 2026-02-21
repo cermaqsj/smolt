@@ -267,12 +267,16 @@ body {
 /* Home View */
 #view-home {
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Evita overlap superior en pantallas pequeñas */
     text-align: center;
+    overflow-y: auto;
+    padding-bottom: 2rem;
 }
 
 .home-illustration {
-    margin-bottom: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .qr-target-anim {

@@ -74,6 +74,78 @@ body {
     /* Para mobile iOS Safari */
 }
 
+/* Splash Screen */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-color);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.splash-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.splash-logo {
+    width: 200px;
+    filter: var(--logo-filter);
+    animation: pulseLogo 2s infinite ease-in-out;
+}
+
+@keyframes pulseLogo {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+}
+
+.loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--surface-border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#splash-text {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
 /* Header */
 .app-header {
     display: flex;
@@ -452,16 +524,98 @@ button:active {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.23);
 }
 
-.install-app-btn {
-    margin-top: 15px;
-    background: var(--accent);
-    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+/* Dashboard Secondary Actions */
+.dashboard-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 30px;
 }
 
-.install-app-btn:hover {
+.btn-dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-dashboard:active {
+    transform: scale(0.98);
+}
+
+.btn-sheets {
+    background: #10b981;
+    /* Verde Google Sheets */
+    color: white;
+}
+
+.btn-sheets:hover {
     background: #059669;
-    /* Accent dark */
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.23);
+}
+
+.btn-pdf {
+    background: #f43f5e;
+    /* Rojo/Rosado PDF */
+    color: white;
+}
+
+.btn-pdf:hover {
+    background: #e11d48;
+}
+
+.btn-install {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--surface-border);
+}
+
+.btn-install:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Botón Ver Todos y Detalles */
+.btn-outlined {
+    background: transparent;
+    border: 2px solid var(--primary-light);
+    color: var(--primary-light);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.btn-outlined:hover {
+    background: rgba(56, 189, 248, 0.1);
+}
+
+.all-details-grid {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--surface-border);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.all-details-grid .data-group {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .btn-secondary {
@@ -546,12 +700,21 @@ button:active {
     color: #000 !important;
 }
 
+.pdf-export-mode .pdf-only-header {
+    display: block !important;
+}
+
 .pdf-export-mode .data-group label {
     color: #444 !important;
 }
 
 .pdf-export-mode .id-badge {
     border-color: #ccc;
+}
+
+.pdf-export-mode .btn-outlined,
+.pdf-export-mode .all-details-grid {
+    display: none !important;
 }
 
 .report-footer {

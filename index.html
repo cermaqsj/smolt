@@ -28,25 +28,24 @@
     <!-- Canvas animado de partículas (Super ligero) -->
     <canvas id="bg-particles"></canvas>
 
+    <!-- Splash Screen de Carga Inicial -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <img src="Cermaq_logo2.png" alt="Cermaq Logo" class="splash-logo">
+            <div class="loader-spinner"></div>
+            <p id="splash-text">Conectando a Google Sheets...</p>
+        </div>
+    </div>
+
     <main class="app-container">
         <!-- Header Premium -->
         <header class="app-header">
             <div class="header-content">
                 <img src="Cermaq_logo2.png" alt="Cermaq Logo" class="cermaq-logo">
-                <p class="header-subtitle">Intelligent Tank Monitor</p>
                 <div id="sync-status" class="sync-status syncing">
-                    <span class="status-dot"></span> <span id="sync-text">Sincronizando...</span>
+                    <span class="status-dot"></span> <span id="sync-text">Conectando...</span>
                 </div>
             </div>
-            <button id="btn-export-all" class="btn-icon" style="display: none;" title="Exportar Todos los Estanques"
-                onclick="exportAllToPDF()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-            </button>
         </header>
 
         <!-- Main Content Area -->
@@ -74,14 +73,44 @@
                         <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                 </button>
-                <button id="install-app-btn" class="btn-primary install-app-btn" style="display: none;">
-                    Instalar APP (PWA)
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                </button>
+
+                <!-- Panel de Dashboards Actions -->
+                <div class="dashboard-actions">
+                    <a href="https://docs.google.com/spreadsheets/d/1TJPETwqexJxstjEyBVYYkwhby6C4oGqP0zkNyhxzTpA/edit?gid=0#gid=0"
+                        target="_blank" class="btn-dashboard btn-sheets">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Abrir Base Datos Base (G-Sheets)
+                    </a>
+
+                    <button id="btn-export-all" class="btn-dashboard btn-pdf" style="display: none;"
+                        onclick="exportAllToPDF()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <path d="M12 18v-6"></path>
+                            <path d="M9 15l3 3 3-3"></path>
+                        </svg>
+                        Descargar Reporte General (20 Estanques)
+                    </button>
+
+                    <button id="install-app-btn" class="btn-dashboard btn-install" style="display: none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Instalar APP (PWA)
+                    </button>
+                </div>
             </div>
 
             <!-- Vista 2: Lector QR Activo -->
@@ -103,6 +132,12 @@
             <div id="view-result" class="view">
 
                 <div class="result-card" id="pdf-content">
+                    <div class="pdf-only-header" style="display: none; text-align: center; margin-bottom: 20px;">
+                        <img src="Cermaq_logo2.png" alt="Cermaq Logo"
+                            style="width: 150px; margin-bottom: 10px; filter: brightness(0);">
+                        <h3>Reporte Detallado de Estanque</h3>
+                    </div>
+
                     <div class="card-header">
                         <div class="badge">Estanque</div>
                         <h2 id="r-estanque">--</h2>
@@ -142,10 +177,18 @@
                             <label>Calibre</label>
                             <p id="r-calibre">--</p>
                         </div>
-                        <div class="data-group full-width">
-                            <label>Observaciones/Otros</label>
-                            <p id="r-observaciones">--</p>
-                        </div>
+                    </div>
+
+                    <button id="btn-toggle-details" class="btn-outlined full-width" onclick="toggleAllDetails()">
+                        Ver todos los datos de la Fila (Detallado)
+                        <svg id="icon-toggle-details" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+
+                    <div id="all-details-container" class="all-details-grid" style="display: none;">
+                        <!-- Poblado por JS -->
                     </div>
 
                     <!-- Footer del reporte para el PDF -->

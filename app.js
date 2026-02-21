@@ -45,16 +45,33 @@ async function fetchData() {
 
         estanquesData = data;
         localStorage.setItem('estanquesData', JSON.stringify(data));
-        setSyncStatus('Sincronizado', 'success');
+        setSyncStatus('Actualizado', 'success');
         btnExportAll.style.display = 'flex';
+
+        // Ocultar Splash Screen después de carga exitosa
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.classList.add('hidden');
+                setTimeout(() => splash.style.display = 'none', 500); // Darle tiempo a la animación CSS
+            }
+        }, 500);
 
     } catch (error) {
         console.error("Error fetching data:", error);
         if (estanquesData.length > 0) {
-            setSyncStatus('Sin conexión (Usando Caché)', 'syncing');
+            setSyncStatus('Sin red (Caché Lista)', 'syncing');
             syncStatusBanner.style.color = '#f59e0b';
+
+            // Ocultar Splash Screen si usamos datos antiguos
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.classList.add('hidden');
+                setTimeout(() => splash.style.display = 'none', 500);
+            }
         } else {
-            setSyncStatus('Error de conexión', 'error');
+            setSyncStatus('¡Sin conexión!', 'error');
+            document.getElementById('splash-text').textContent = 'Error: No hay datos guardados ni conexión a internet.';
             showToast('No se pudo conectar con la base de datos');
         }
     }
@@ -146,9 +163,51 @@ function displayEstanque(e, id) {
 
     document.getElementById('r-origen').textContent = e.ORIGEN || '--';
     document.getElementById('r-calibre').textContent = e.CALIBRE || '--';
-    document.getElementById('r-observaciones').textContent = e.OBSERVACIONES || e.OTROS || '--';
+
+    // Cerrar siempre el desplegable de "Todos los datos" al buscar uno nuevo
+    const detailsContainer = document.getElementById('all-details-container');
+    const iconToggle = document.getElementById('icon-toggle-details');
+    detailsContainer.style.display = 'none';
+    detailsContainer.innerHTML = '';
+    iconToggle.style.transform = 'rotate(0deg)';
+
+    // Construir la tabla dinámica de todas las claves que manda el Sheets
+    const fragment = document.createDocumentFragment();
+    for (const [key, value] of Object.entries(e)) {
+        // Ignorar campos vacíos si quieres, o mostrar todo
+        if (value !== "") {
+            const dataGroup = document.createElement('div');
+            dataGroup.className = 'data-group';
+
+            const label = document.createElement('label');
+            label.textContent = key.replace(/_/g, ' '); // ID_QR -> ID QR
+
+            const p = document.createElement('p');
+            p.textContent = value;
+
+            dataGroup.appendChild(label);
+            dataGroup.appendChild(p);
+            fragment.appendChild(dataGroup);
+        }
+    }
+    detailsContainer.appendChild(fragment);
 
     showView('result');
+}
+
+// Toggle para expandir todos los detalles
+function toggleAllDetails() {
+    const container = document.getElementById('all-details-container');
+    const icon = document.getElementById('icon-toggle-details');
+
+    if (container.style.display === 'none') {
+        container.style.display = 'grid';
+        icon.style.transform = 'rotate(180deg)';
+        icon.style.transition = 'transform 0.3s';
+    } else {
+        container.style.display = 'none';
+        icon.style.transform = 'rotate(0deg)';
+    }
 }
 
 // Utilidad Toast
@@ -226,7 +285,6 @@ function exportAllToPDF() {
 
         page.querySelector('#r-origen').textContent = estanque.ORIGEN || '--';
         page.querySelector('#r-calibre').textContent = estanque.CALIBRE || '--';
-        page.querySelector('#r-observaciones').textContent = estanque.OBSERVACIONES || estanque.OTROS || '--';
 
         page.querySelector('.report-footer').style.display = 'block';
         page.querySelector('#report-date').textContent = new Date().toLocaleString('es-CL');

@@ -484,6 +484,8 @@ body {
     font-size: 1rem;
     font-weight: 500;
     word-break: break-word;
+    color: white;
+    /* Color Default UI Blanca para Legibilidad Dark Mode */
 }
 
 .metric {
@@ -889,6 +891,19 @@ button:active {
     flex-direction: column !important;
     gap: 0.5rem !important;
     padding: 0 20px !important;
+}
+
+/* Forzar Texto a Negro Absoluto en Bloques y Valores */
+.pdf-export-mode .data-grid *,
+.pdf-export-mode .data-group p,
+.pdf-export-mode .data-group label,
+.pdf-export-mode .metric {
+    background: none !important;
+    background-color: transparent !important;
+    color: #000000 !important;
+    font-family: Arial, sans-serif !important;
+    -webkit-text-fill-color: initial !important;
+    /* Resetea degradados webkit */
 }
 
 .pdf-export-mode .print-row {

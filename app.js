@@ -172,28 +172,19 @@ function stopScanner() {
 }
 
 function onScanSuccess(decodedText) {
-    // 1. Reproducir Sonido de Éxito Inmediatamente (No bloqueante)
-    audioSuccess.currentTime = 0; // Reiniciar audio si ya estaba sonando
+    audioSuccess.currentTime = 0;
     audioSuccess.play().catch(e => console.log('Audio autoplay prevented'));
 
-    // 2. Detenemos y limpiamos el Scanner de forma limpia antes de navegar
     if (html5QrcodeScanner) {
-        // Pausar internamente
+        // En vez de detener el hardware (que es asincrono y pisa la UI), simplemente lo pausamos 
+        // y ocultamos la vista. De esta forma el resultado del escaneo no compite con la promesa de Stop.
         html5QrcodeScanner.pause(true);
-
-        // Detener la camara en segundo plano pero continuar procesando la app
-        html5QrcodeScanner.stop().then(() => {
-            html5QrcodeScanner.clear();
-        }).catch(err => console.log("Stop falló: ", err));
+        setTimeout(() => {
+            html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(e => e);
+        }, 500); // Apagar hardware medio segundo DESPUES de renderizar, sin romper la UX.
     }
 
-    // 3. Ocultar Scanner, Visualizar UI Home y Procesar Texto leido
-    showView('home');
-
-    // Diferir procesamiento 150ms para permitir que la UI cierre la camara con fluidez
-    setTimeout(() => {
-        processScanResult(decodedText);
-    }, 150);
+    processScanResult(decodedText);
 }
 
 // Función auxiliar para buscar el valor de una clave ignorando mayúsculas y espacios invisibles

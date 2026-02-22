@@ -172,10 +172,28 @@ function stopScanner() {
 }
 
 function onScanSuccess(decodedText) {
-    // Al escanear S01, buscamos en los datos
+    // 1. Reproducir Sonido de Éxito Inmediatamente (No bloqueante)
+    audioSuccess.currentTime = 0; // Reiniciar audio si ya estaba sonando
     audioSuccess.play().catch(e => console.log('Audio autoplay prevented'));
-    stopScanner(); // Detenemos la cámara primero para ahorrar recursos
-    processScanResult(decodedText);
+
+    // 2. Detenemos y limpiamos el Scanner de forma limpia antes de navegar
+    if (html5QrcodeScanner) {
+        // Pausar internamente
+        html5QrcodeScanner.pause(true);
+
+        // Detener la camara en segundo plano pero continuar procesando la app
+        html5QrcodeScanner.stop().then(() => {
+            html5QrcodeScanner.clear();
+        }).catch(err => console.log("Stop falló: ", err));
+    }
+
+    // 3. Ocultar Scanner, Visualizar UI Home y Procesar Texto leido
+    showView('home');
+
+    // Diferir procesamiento 150ms para permitir que la UI cierre la camara con fluidez
+    setTimeout(() => {
+        processScanResult(decodedText);
+    }, 150);
 }
 
 // Función auxiliar para buscar el valor de una clave ignorando mayúsculas y espacios invisibles

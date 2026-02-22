@@ -1,4 +1,4 @@
-const CACHE_NAME = 'estanques-scanner-v4';
+const CACHE_NAME = 'estanques-scanner-v5';
 const urlsToCache = [
     './',
     './index.html',
@@ -7,6 +7,9 @@ const urlsToCache = [
     './manifest.json',
     './Cermaq_logo2.png',
     './icon.png',
+    './SOUND/SCPH-10000_00026.wav',
+    './SOUND/SCPH-10000_00029.wav',
+    './SOUND/SCPH-10000_00030.wav',
     'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap',
     'https://unpkg.com/html5-qrcode',
     'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'

@@ -6,6 +6,11 @@ let estanquesData = [];
 let html5QrcodeScanner = null;
 let currentEstanque = null;
 
+// Sistema de Audio (Micro-Interacciones)
+const audioSuccess = new Audio('./SOUND/SCPH-10000_00030.wav');
+const audioScanOpen = new Audio('./SOUND/SCPH-10000_00029.wav');
+const audioExportPDF = new Audio('./SOUND/SCPH-10000_00026.wav');
+
 // Elementos DOM
 const viewHome = document.getElementById('view-home');
 const viewScanner = document.getElementById('view-scanner');
@@ -142,6 +147,7 @@ function showView(viewId) {
 // Scanner Lógica
 function startScanner() {
     showView('scanner');
+    audioScanOpen.play().catch(e => console.log('Audio autoplay prevented'));
 
     html5QrcodeScanner = new Html5Qrcode("reader");
     const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
@@ -167,6 +173,7 @@ function stopScanner() {
 
 function onScanSuccess(decodedText) {
     // Al escanear S01, buscamos en los datos
+    audioSuccess.play().catch(e => console.log('Audio autoplay prevented'));
     stopScanner(); // Detenemos la cámara primero para ahorrar recursos
     processScanResult(decodedText);
 }
@@ -340,6 +347,7 @@ function showToast(message) {
 function exportIndividualPDF() {
     if (!currentEstanque) return;
 
+    audioExportPDF.play().catch(e => console.log('Audio autoplay prevented'));
     const element = document.getElementById('pdf-content');
     const footer = element.querySelector('.report-footer');
 
@@ -386,6 +394,7 @@ function exportAllToPDF() {
         return;
     }
 
+    audioExportPDF.play().catch(e => console.log('Audio autoplay prevented'));
     showToast('Generando reporte completo... esto tomará unos segundos.');
     const container = document.getElementById('full-pdf-container');
     container.innerHTML = ''; // Limpiar

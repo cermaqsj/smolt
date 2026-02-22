@@ -1,4 +1,4 @@
-const CACHE_NAME = 'estanques-scanner-v3';
+const CACHE_NAME = 'estanques-scanner-v4';
 const urlsToCache = [
     './',
     './index.html',
@@ -6,11 +6,10 @@ const urlsToCache = [
     './app.js',
     './manifest.json',
     './Cermaq_logo2.png',
+    './icon.png',
     'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap',
     'https://unpkg.com/html5-qrcode',
-    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
-    'https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=CERMAQ',
-    'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=CERMAQ'
+    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
 ];
 
 // Instalación: Cachear todo el frontend necesario para funcionar offline

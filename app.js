@@ -17,9 +17,35 @@ const btnExportAll = document.getElementById('btn-export-all');
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
+    initManualGrid();
     registerServiceWorker();
     initParticles();
 });
+
+// Función para inicializar la grilla manual de estanques
+function initManualGrid() {
+    const container = document.getElementById('manual-grid-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    for (let i = 1; i <= 20; i++) {
+        const estanqueId = 'S' + i.toString().padStart(2, '0');
+        const btn = document.createElement('button');
+        btn.className = 'btn-manual-estanque';
+        btn.textContent = i; // Mostrar solo el número
+        btn.onclick = () => {
+            // Un pequeño parpadeo al apretar
+            btn.style.transform = 'scale(0.9)';
+            setTimeout(() => btn.style.transform = '', 150);
+
+            // Simular escaneo con un leve delay temporal
+            setTimeout(() => {
+                processScanResult(estanqueId);
+            }, 100);
+        };
+        container.appendChild(btn);
+    }
+}
 
 // Función para obtener los datos
 async function fetchData() {
@@ -60,8 +86,12 @@ async function fetchData() {
     } catch (error) {
         console.error("Error fetching data:", error);
         if (estanquesData.length > 0) {
-            setSyncStatus('Sin red (Caché Lista)', 'syncing');
-            syncStatusBanner.style.color = '#f59e0b';
+            setSyncStatus('Modo Offline Activo', 'syncing');
+            syncStatusBanner.style.backgroundColor = '#f59e0b'; // Naranja warning
+            syncStatusBanner.style.color = '#fff';
+            syncStatusBanner.style.borderColor = '#d97706';
+
+            showToast('🌐 Sin internet. Usando últimos datos guardados.');
 
             // Ocultar Splash Screen si usamos datos antiguos
             const splash = document.getElementById('splash-screen');
@@ -73,6 +103,20 @@ async function fetchData() {
             setSyncStatus('¡Sin conexión!', 'error');
             document.getElementById('splash-text').textContent = 'Error: No hay datos guardados ni conexión a internet.';
             showToast('No se pudo conectar con la base de datos');
+
+            // Permitir al usuario intentar recargar
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                const btnRetry = document.createElement('button');
+                btnRetry.className = 'btn-primary';
+                btnRetry.style.marginTop = '20px';
+                btnRetry.textContent = 'Intentar de Nuevo';
+                btnRetry.onclick = () => location.reload();
+                if (!document.getElementById('retry-btn')) {
+                    btnRetry.id = 'retry-btn';
+                    splash.querySelector('.splash-content').appendChild(btnRetry);
+                }
+            }
         }
     }
 }
@@ -127,63 +171,137 @@ function onScanSuccess(decodedText) {
     processScanResult(decodedText);
 }
 
+// Función auxiliar para buscar el valor de una clave ignorando mayúsculas y espacios invisibles
+function getFlexibleValue(obj, keysArray) {
+    for (let key of keysArray) {
+        const found = Object.keys(obj).find(k => k.toUpperCase().trim() === key.toUpperCase().trim());
+        if (found !== undefined && obj[found] !== undefined && obj[found] !== '') {
+            return obj[found];
+        }
+    }
+    return '';
+}
+
 function processScanResult(qrText) {
-    // Busca el estanque por ID_QR (Ej: "S01"). Normalizamos mayúsculas.
-    const estanque = estanquesData.find(e =>
-        (e.ID_QR && e.ID_QR.toString().toUpperCase() === qrText.toUpperCase()) ||
-        (e.ID && e.ID.toString().toUpperCase() === qrText.toUpperCase()) // Fallback
-    );
+    const query = qrText.toString().toUpperCase().trim();
+
+    // Construir posibles variantes del nombre (ej: "S01" -> "1", "01", "ESTANQUE 1", etc.)
+    const queryMatches = [query];
+    const numMatch = query.match(/\d+/);
+    if (numMatch) {
+        const numStr = numMatch[0]; // ej: "01"
+        const numInt = parseInt(numStr, 10).toString(); // ej: "1"
+        queryMatches.push(
+            numStr,
+            numInt,
+            `S${numStr}`,
+            `S${numInt}`,
+            `ESTANQUE ${numStr}`,
+            `ESTANQUE ${numInt}`
+        );
+    }
+
+    // Busca el estanque por ID_QR, ID o ESTANQUE
+    const estanque = estanquesData.find(e => {
+        const idQr = getFlexibleValue(e, ['ID_QR']).toString().toUpperCase().trim();
+        const id = getFlexibleValue(e, ['ID']).toString().toUpperCase().trim();
+        const estNombre = getFlexibleValue(e, ['ESTANQUE']).toString().toUpperCase().trim();
+
+        return queryMatches.includes(idQr) ||
+            queryMatches.includes(id) ||
+            queryMatches.includes(estNombre);
+    });
 
     if (estanque) {
         currentEstanque = estanque;
         displayEstanque(estanque, qrText);
     } else {
-        showToast(`Estanque ${qrText} no encontrado en la base de datos.`);
+        showToast(`Estanque ${qrText} no encontrado en BD descargada (${estanquesData.length} registros).`);
+        // Si no lo encuentra, volvemos al inicio
         showView('home');
     }
 }
 
 function displayEstanque(e, id) {
     // Asignar datos al DOM asumiendo encabezados estándar. Retocamos si no existen.
-    document.getElementById('r-idqr').textContent = e.ID_QR || id;
-    document.getElementById('r-estanque').textContent = e.ESTANQUE || `Estanque (ID: ${id})`;
-    document.getElementById('r-especie').textContent = e.ESPECIE || '--';
-    document.getElementById('r-grupo').textContent = e.GRUPO || '--';
+    const estanqueName = getFlexibleValue(e, ['ESTANQUE']) || `Estanque ${id}`;
+    document.getElementById('r-estanque').textContent = estanqueName;
 
-    // Mapeo flexible según cabeceras
-    const numPeces = e.STOCK_ACTUAL || e.NUMERO_PECES || '--';
-    const peso = e.PESO_G || e.PESO || '--';
-    const biomasa = e.BIOMASA_KG || '--';
-    const densidad = e.DENSIDAD_M3 || e.DENSIDAD || '--';
+    // Mapeo directo a los campos solicitados
+    const especie = getFlexibleValue(e, ['ESPECIE', 'SPECIES']) || '--';
+    document.getElementById('r-especie').textContent = especie;
 
+    const grupo = getFlexibleValue(e, ['GRUPO', 'GROUP']) || '--';
+    document.getElementById('r-grupo').textContent = grupo;
+
+    const numPeces = getFlexibleValue(e, ['STOCK_ACTUAL', 'CURRENT STOCK', 'NUMERO_PECES']) || '--';
     document.getElementById('r-numero-peces').textContent = numPeces !== '--' ? numPeces.toLocaleString('es-CL') : '--';
+
+    const peso = getFlexibleValue(e, ['PESO_G', 'CURRENT WEIGT (GR)', 'CURRENT WEIGHT (GR)', 'PESO']) || '--';
     document.getElementById('r-peso').textContent = peso !== '--' ? peso + ' g' : '--';
-    document.getElementById('r-biomasa').textContent = biomasa !== '--' ? biomasa + ' kg' : '--';
+
+    const densidad = getFlexibleValue(e, ['DENSIDAD_M3', 'CULTURE DENSITY (KG/M3)', 'DENSIDAD']) || '--';
     document.getElementById('r-densidad').textContent = densidad !== '--' ? densidad + ' kg/m³' : '--';
 
-    document.getElementById('r-origen').textContent = e.ORIGEN || '--';
-    document.getElementById('r-calibre').textContent = e.CALIBRE || '--';
+    const origen = getFlexibleValue(e, ['ORIGEN', 'ORIGIN']) || '--';
+    document.getElementById('r-origen').textContent = origen;
+
+    const calibre = getFlexibleValue(e, ['CALIBRE', 'CURRENT COEF. VAR. (%)', 'ÍNDICE DE CONDICIÓN (K)', 'ÍNDICE DE CONDICIÓN']) || '--';
+    document.getElementById('r-calibre').textContent = calibre;
+
+    const otros = getFlexibleValue(e, ['OTROS', 'OBSERVACIONES', 'OBSERVATIONS']) || '--';
+    document.getElementById('r-otros').textContent = otros;
+
+    const actualizado = getFlexibleValue(e, ['ACTUALIZADO', 'DATE', 'FECHA']) || '--';
+    let fechaTxt = actualizado;
+    if (actualizado && actualizado !== '--') {
+        try {
+            const date = new Date(actualizado);
+            if (!isNaN(date)) fechaTxt = date.toLocaleDateString('es-CL');
+        } catch (err) { }
+    }
+    document.getElementById('r-actualizado').textContent = fechaTxt;
 
     // Cerrar siempre el desplegable de "Todos los datos" al buscar uno nuevo
     const detailsContainer = document.getElementById('all-details-container');
     const iconToggle = document.getElementById('icon-toggle-details');
+
+    // Mostramos como grid siempre, pero lo ocultamos por default
     detailsContainer.style.display = 'none';
     detailsContainer.innerHTML = '';
     iconToggle.style.transform = 'rotate(0deg)';
 
     // Construir la tabla dinámica de todas las claves que manda el Sheets
     const fragment = document.createDocumentFragment();
+
+    // Ignorar las claves que ya están permanentemente visibles arriba para no duplicar
+    const rawIgnoreKeys = ['ESTANQUE', 'ID_QR', 'SECTION', 'ID', 'ESPECIE', 'SPECIES', 'GRUPO', 'GROUP', 'STOCK_ACTUAL', 'CURRENT STOCK', 'NUMERO_PECES', 'PESO_G', 'CURRENT WEIGT (GR)', 'CURRENT WEIGHT (GR)', 'PESO', 'DENSIDAD_M3', 'CULTURE DENSITY (KG/M3)', 'DENSIDAD', 'ORIGEN', 'ORIGIN', 'CALIBRE', 'CURRENT COEF. VAR. (%)', 'ÍNDICE DE CONDICIÓN (K)', 'ÍNDICE DE CONDICIÓN', 'OTROS', 'OBSERVACIONES', 'OBSERVATIONS', 'ACTUALIZADO', 'DATE', 'FECHA'];
+    const ignoreKeys = rawIgnoreKeys.map(k => k.toUpperCase().trim());
+
     for (const [key, value] of Object.entries(e)) {
-        // Ignorar campos vacíos si quieres, o mostrar todo
-        if (value !== "") {
+        const cleanKey = key.toUpperCase().trim();
+
+        if (value !== "" && !ignoreKeys.includes(cleanKey)) {
             const dataGroup = document.createElement('div');
             dataGroup.className = 'data-group';
 
             const label = document.createElement('label');
-            label.textContent = key.replace(/_/g, ' '); // ID_QR -> ID QR
+            label.textContent = cleanKey.replace(/_/g, ' ');
 
             const p = document.createElement('p');
-            p.textContent = value;
+
+            // Formatear fechas si detecta la clave
+            if (cleanKey === 'ACTUALIZADO') {
+                try {
+                    const date = new Date(value);
+                    if (!isNaN(date)) p.textContent = date.toLocaleDateString('es-CL');
+                    else p.textContent = value;
+                } catch (err) { p.textContent = value; }
+            } else {
+                p.textContent = value;
+            }
+
+            p.style.color = "white"; // Asegurar que todo se vea blanco
 
             dataGroup.appendChild(label);
             dataGroup.appendChild(p);
@@ -225,24 +343,39 @@ function exportIndividualPDF() {
     const element = document.getElementById('pdf-content');
     const footer = element.querySelector('.report-footer');
 
-    // Preparar para impresión
+    // Forzar el mostrar los detalles ocultos para que salgan en el PDF temporalmente
+    const detailsContainer = document.getElementById('all-details-container');
+    const wasHidden = detailsContainer.style.display === 'none';
+    if (wasHidden) detailsContainer.style.display = 'grid';
+
+    // Preparar para impresión: Activa clases CSS de PDF que vuelven todo blanco a negro
     element.classList.add('pdf-export-mode');
     footer.style.display = 'block';
     document.getElementById('report-date').textContent = new Date().toLocaleString('es-CL');
 
     const opt = {
         margin: 10,
-        filename: `Reporte_Estanque_${currentEstanque.ID_QR}.pdf`,
+        filename: `Reporte_Estanque_${currentEstanque.ID_QR || currentEstanque.ESTANQUE}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
+    // En móviles a veces falla el bloburl directo. Usamos .save() que es el método más estable
+    // de esta librería, y confiamos en el visor de PDF nativo del dispositivo (o la carpeta de descargas).
     html2pdf().set(opt).from(element).save().then(() => {
-        // Restaurar estado
+        // Restaurar estado visual inmediatamente
         element.classList.remove('pdf-export-mode');
         footer.style.display = 'none';
-        showToast('PDF Exportado Correctamente');
+        if (wasHidden) detailsContainer.style.display = 'none';
+
+        showToast('PDF Descargado exitosamente');
+    }).catch(err => {
+        // En caso de error restaurar y avisar
+        element.classList.remove('pdf-export-mode');
+        footer.style.display = 'none';
+        if (wasHidden) detailsContainer.style.display = 'none';
+        showToast('Error generando PDF: ' + err.message);
     });
 }
 
@@ -268,23 +401,46 @@ function exportAllToPDF() {
         page.classList.add('full-report-page');
         page.id = `page-${idx}`;
 
-        page.querySelector('#r-idqr').textContent = estanque.ID_QR || '--';
-        page.querySelector('#r-estanque').textContent = estanque.ESTANQUE || '--';
-        page.querySelector('#r-especie').textContent = estanque.ESPECIE || '--';
-        page.querySelector('#r-grupo').textContent = estanque.GRUPO || '--';
+        // Activar el logo vectorial corporativo
+        const logo = page.querySelector('.print-cermaq-logo-svg');
+        if (logo) logo.style.display = 'block';
 
-        const numPeces = estanque.STOCK_ACTUAL || estanque.NUMERO_PECES || '--';
-        const peso = estanque.PESO_G || estanque.PESO || '--';
-        const biomasa = estanque.BIOMASA_KG || '--';
-        const densidad = estanque.DENSIDAD_M3 || estanque.DENSIDAD || '--';
+        const estanqueName = getFlexibleValue(estanque, ['ESTANQUE', 'SECTION', 'ID_QR', 'ID']) || '--';
+        page.querySelector('#r-estanque').textContent = estanqueName;
 
+        const especie = getFlexibleValue(estanque, ['ESPECIE', 'SPECIES']) || '--';
+        page.querySelector('#r-especie').textContent = especie;
+
+        const grupo = getFlexibleValue(estanque, ['GRUPO', 'GROUP']) || '--';
+        page.querySelector('#r-grupo').textContent = grupo;
+
+        const numPeces = getFlexibleValue(estanque, ['STOCK_ACTUAL', 'CURRENT STOCK', 'NUMERO_PECES']) || '--';
         page.querySelector('#r-numero-peces').textContent = numPeces !== '--' ? numPeces.toLocaleString('es-CL') : '--';
+
+        const peso = getFlexibleValue(estanque, ['PESO_G', 'CURRENT WEIGT (GR)', 'CURRENT WEIGHT (GR)', 'PESO']) || '--';
         page.querySelector('#r-peso').textContent = peso !== '--' ? peso + ' g' : '--';
-        page.querySelector('#r-biomasa').textContent = biomasa !== '--' ? biomasa + ' kg' : '--';
+
+        const densidad = getFlexibleValue(estanque, ['DENSIDAD_M3', 'CULTURE DENSITY (KG/M3)', 'DENSIDAD']) || '--';
         page.querySelector('#r-densidad').textContent = densidad !== '--' ? densidad + ' kg/m³' : '--';
 
-        page.querySelector('#r-origen').textContent = estanque.ORIGEN || '--';
-        page.querySelector('#r-calibre').textContent = estanque.CALIBRE || '--';
+        const origen = getFlexibleValue(estanque, ['ORIGEN', 'ORIGIN']) || '--';
+        page.querySelector('#r-origen').textContent = origen;
+
+        const calibre = getFlexibleValue(estanque, ['CALIBRE', 'CURRENT COEF. VAR. (%)', 'ÍNDICE DE CONDICIÓN (K)', 'ÍNDICE DE CONDICIÓN']) || '--';
+        page.querySelector('#r-calibre').textContent = calibre;
+
+        const otros = getFlexibleValue(estanque, ['OTROS', 'OBSERVACIONES', 'OBSERVATIONS']) || '--';
+        page.querySelector('#r-otros').textContent = otros;
+
+        const actualizado = getFlexibleValue(estanque, ['ACTUALIZADO', 'DATE', 'FECHA']) || '--';
+        let fechaTxt = actualizado;
+        if (actualizado && actualizado !== '--') {
+            try {
+                const date = new Date(actualizado);
+                if (!isNaN(date)) fechaTxt = date.toLocaleDateString('es-CL');
+            } catch (err) { }
+        }
+        page.querySelector('#r-actualizado').textContent = fechaTxt;
 
         page.querySelector('.report-footer').style.display = 'block';
         page.querySelector('#report-date').textContent = new Date().toLocaleString('es-CL');

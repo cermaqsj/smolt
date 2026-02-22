@@ -630,13 +630,46 @@ button:active {
     background: rgba(56, 189, 248, 0.1);
 }
 
-.all-details-grid {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px dashed var(--surface-border);
+
+.manual-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 0 10px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 400px) {
+    .manual-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.btn-manual-estanque {
+    background: var(--surface);
+    border: 2px solid var(--surface-border);
+    color: var(--text-primary);
+    padding: 18px 0;
+    border-radius: 16px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.btn-manual-estanque:hover,
+.btn-manual-estanque:active {
+    background: var(--primary);
+    color: white;
+    transform: scale(0.95);
+    border-color: var(--primary-light);
+    box-shadow: 0 8px 15px rgba(37, 99, 235, 0.4);
 }
 
 .all-details-grid .data-group {
@@ -714,10 +747,15 @@ button:active {
 }
 
 /* Overrides para PDF html2pdf */
-.pdf-export-mode {
+.pdf-export-mode,
+.pdf-export-mode * {
     background: white !important;
     color: black !important;
-    border: none !important;
+    border-color: #ccc !important;
+    font-family: Tahoma, Arial, sans-serif !important;
+}
+
+.pdf-export-mode {
     box-shadow: none !important;
     margin: 0 !important;
     border-radius: 0 !important;
@@ -727,21 +765,39 @@ button:active {
     color: #000 !important;
 }
 
-.pdf-export-mode .pdf-only-header {
-    display: block !important;
+.pdf-export-mode .pdf-only-header,
+.pdf-export-mode .report-footer {
+    display: none !important;
 }
 
 .pdf-export-mode .data-group label {
     color: #444 !important;
 }
 
-.pdf-export-mode .id-badge {
-    border-color: #ccc;
+.pdf-export-mode .data-group p {
+    color: #000 !important;
 }
 
-.pdf-export-mode .btn-outlined,
-.pdf-export-mode .all-details-grid {
+.pdf-export-mode .id-badge {
+    border-color: #ccc;
+    color: #000 !important;
+}
+
+.pdf-export-mode .btn-outlined {
     display: none !important;
+}
+
+.pdf-export-mode .all-details-grid,
+.pdf-export-mode .data-grid {
+    display: grid !important;
+}
+
+.hide-on-screen {
+    display: none;
+}
+
+.pdf-export-mode .hide-on-screen {
+    display: flex !important;
 }
 
 .report-footer {
@@ -761,4 +817,108 @@ button:active {
 
 .full-report-page:last-child {
     page-break-after: auto;
+}
+
+/* Print Header Customization */
+.print-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.pdf-export-mode .print-header {
+    border-bottom: 2px solid #00b0b9 !important;
+    /* Color cermaq approx */
+    padding-bottom: 20px !important;
+}
+
+.print-header-top {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.print-title-left {
+    color: var(--accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.print-title-right {
+    color: var(--accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.pdf-export-mode .print-title-left {
+    color: #00b0b9 !important;
+    font-size: 1.4rem !important;
+}
+
+.print-cermaq-logo-svg {
+    display: none;
+    color: #000080;
+    /* Official Navy Blue logo color */
+}
+
+.pdf-export-mode .print-cermaq-logo-svg {
+    display: block !important;
+    width: 200px;
+    height: auto;
+}
+
+.print-estanque-title {
+    text-align: center;
+    font-weight: 400 !important;
+    letter-spacing: 2px;
+}
+
+.pdf-export-mode .print-estanque-title {
+    font-size: 1.8rem !important;
+    margin-top: 10px !important;
+    color: #000 !important;
+}
+
+/* Adjustments for print rows */
+.pdf-export-mode .print-data-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    padding: 0 20px !important;
+}
+
+.pdf-export-mode .print-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: baseline !important;
+    border-bottom: none !important;
+}
+
+.pdf-export-mode .print-row label {
+    width: 250px !important;
+    font-size: 1.1rem !important;
+    font-weight: 400 !important;
+    color: #000 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.pdf-export-mode .print-row p {
+    font-size: 1.1rem !important;
+    font-weight: 400 !important;
+    color: #000 !important;
+}
+
+/* Overall PDF Container for Cermaq Ticket */
+.pdf-export-mode.result-card,
+.pdf-export-mode.full-report-page {
+    border: 1px solid #00b0b9 !important;
+    border-radius: 0 !important;
+    padding: 30px !important;
+    box-shadow: inset 0 0 0 2px #00b0b9 !important;
 }

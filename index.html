@@ -261,15 +261,14 @@
                     </div>
                 </div>
 
-                <div class="action-buttons no-print">
-                    <button class="btn-secondary" onclick="exportIndividualPDF()">
+                <div class="action-buttons no-print" id="normal-action-buttons">
+                    <button class="btn-secondary" onclick="previewPDF()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
                         </svg>
-                        Descargar PDF
+                        Previsualizar PDF
                     </button>
                     <button class="btn-primary" onclick="showView('home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -277,6 +276,22 @@
                             <path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3M9 9h6v6H9z"></path>
                         </svg>
                         Escanear Otro
+                    </button>
+                </div>
+
+                <!-- Botones de Confirmación PDF (Ocultos por defecto) -->
+                <div class="action-buttons no-print" id="preview-action-buttons" style="display: none;">
+                    <button class="btn-secondary" onclick="cancelPDFPreview()">
+                        Volver
+                    </button>
+                    <button class="btn-primary" onclick="confirmDownloadPDF()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Descargar PDF
                     </button>
                 </div>
             </div>

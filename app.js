@@ -147,6 +147,11 @@ function setSyncStatus(text, type) {
 
 // Navegación con Historial Nativo (Previene Cierres por Botón Atrás en PWA)
 function showView(viewId, updateHistory = true) {
+    // Si el usuario cambia de vista estando en medio de una previsualización de PDF, la abortamos para limpiar la UI
+    if (document.getElementById('pdf-content') && document.getElementById('pdf-content').classList.contains('pdf-export-mode')) {
+        cancelPDFPreview();
+    }
+
     document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
     document.getElementById(`view-${viewId}`).classList.add('active');
 
@@ -387,47 +392,72 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// Exportación PDF Individual
-function exportIndividualPDF() {
+// Variables globales temporales para UI de Previsualización PDF
+let detailsWasHidden = true;
+
+// Previsualización Física en Pantalla
+function previewPDF() {
     if (!currentEstanque) return;
 
-    audioExportPDF.play().catch(e => console.log('Audio autoplay prevented'));
     const element = document.getElementById('pdf-content');
     const footer = element.querySelector('.report-footer');
-
-    // Forzar el mostrar los detalles ocultos para que salgan en el PDF temporalmente
     const detailsContainer = document.getElementById('all-details-container');
-    const wasHidden = detailsContainer.style.display === 'none';
-    if (wasHidden) detailsContainer.style.display = 'grid';
 
-    // Preparar para impresión: Activa clases CSS de PDF que vuelven todo blanco a negro
+    detailsWasHidden = detailsContainer.style.display === 'none';
+    if (detailsWasHidden) detailsContainer.style.display = 'grid';
+
+    // Activa clases CSS de PDF que vuelven todo blanco a impresión negra real
     element.classList.add('pdf-export-mode');
     footer.style.display = 'block';
     document.getElementById('report-date').textContent = new Date().toLocaleString('es-CL');
 
+    // Transicionar Botonera
+    document.getElementById('normal-action-buttons').style.display = 'none';
+    document.getElementById('preview-action-buttons').style.display = 'flex';
+
+    // Scrollear al inicio para que el usuario aprecie el ticket
+    document.getElementById('view-result').scrollTop = 0;
+}
+
+// Cancelar Previsualización y Regresar a la Ficha Interactiva
+function cancelPDFPreview() {
+    const element = document.getElementById('pdf-content');
+    const footer = element.querySelector('.report-footer');
+    const detailsContainer = document.getElementById('all-details-container');
+
+    // Revertir CSS de Impresión
+    element.classList.remove('pdf-export-mode');
+    footer.style.display = 'none';
+    if (detailsWasHidden) detailsContainer.style.display = 'none';
+
+    // Restaurar Botonera
+    document.getElementById('normal-action-buttons').style.display = 'flex';
+    document.getElementById('preview-action-buttons').style.display = 'none';
+}
+
+// Exportación PDF Individual Definitiva
+function confirmDownloadPDF() {
+    if (!currentEstanque) return;
+
+    audioExportPDF.play().catch(e => console.log('Audio autoplay prevented'));
+    const element = document.getElementById('pdf-content');
+
+    showToast('Procesando Documento... por favor espere.');
+
     const opt = {
         margin: 10,
-        filename: `Reporte_Estanque_${currentEstanque.ID_QR || currentEstanque.ESTANQUE}.pdf`,
+        filename: `Reporte...Estanque_${currentEstanque.ID_QR || currentEstanque.ESTANQUE}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // En móviles a veces falla el bloburl directo. Usamos .save() que es el método más estable
-    // de esta librería, y confiamos en el visor de PDF nativo del dispositivo (o la carpeta de descargas).
     html2pdf().set(opt).from(element).save().then(() => {
-        // Restaurar estado visual inmediatamente
-        element.classList.remove('pdf-export-mode');
-        footer.style.display = 'none';
-        if (wasHidden) detailsContainer.style.display = 'none';
-
         showToast('PDF Descargado exitosamente');
+        cancelPDFPreview(); // Restaurar el layout al terminar
     }).catch(err => {
-        // En caso de error restaurar y avisar
-        element.classList.remove('pdf-export-mode');
-        footer.style.display = 'none';
-        if (wasHidden) detailsContainer.style.display = 'none';
         showToast('Error generando PDF: ' + err.message);
+        cancelPDFPreview();
     });
 }
 

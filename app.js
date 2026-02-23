@@ -158,13 +158,21 @@ function showView(viewId, updateHistory = true) {
 
 // Capturar evento cuando el usuario presiona el Botón "Atrás" de Android o Gestos de iOS
 window.addEventListener('popstate', (event) => {
-    if (event.state && event.state.view) {
-        showView(event.state.view, false); // Restaura vista sin duplicar historial
-    } else {
-        showView('home', false); // Fallback: volver a casa
+    // Si el usuario presiona "Volver atrás" luego de un resultado de escaneo,
+    // el historial natural querrá abrir el "escáner" (que ya está apagado, viéndose negro)
+    // Para prevenir esto y por diseño, cualquier intento de retroceso envía al inicio.
+
+    let targetView = (event.state && event.state.view) ? event.state.view : 'home';
+
+    // Si el destino es scanner, anular y redirigir siempre a Home
+    if (targetView === 'scanner') {
+        targetView = 'home';
     }
 
-    // Si estaba escaneando, detener camara
+    // Ejecutar renderización visual
+    showView(targetView, false);
+
+    // Apagar Forzosamente Hardware de la Cámara
     if (html5QrcodeScanner && html5QrcodeScanner.getState() === 2) {
         html5QrcodeScanner.stop().catch(e => console.log(e));
         html5QrcodeScanner.clear();

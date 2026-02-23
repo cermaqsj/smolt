@@ -408,6 +408,7 @@ function previewPDF() {
 
     // Activa clases CSS de PDF que vuelven todo blanco a impresión negra real
     element.classList.add('pdf-export-mode');
+    document.body.classList.add('pdf-preview-active');
     footer.style.display = 'block';
     document.getElementById('report-date').textContent = new Date().toLocaleString('es-CL');
 
@@ -427,6 +428,7 @@ function cancelPDFPreview() {
 
     // Revertir CSS de Impresión
     element.classList.remove('pdf-export-mode');
+    document.body.classList.remove('pdf-preview-active');
     footer.style.display = 'none';
     if (detailsWasHidden) detailsContainer.style.display = 'none';
 

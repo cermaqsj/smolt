@@ -949,9 +949,49 @@ button:active {
     font-weight: 700;
 }
 
+/* Fix container padding while previewing */
+body.pdf-preview-active .app-container {
+    padding: 0px !important;
+    max-width: 100% !important;
+}
+
+body.pdf-preview-active #view-result {
+    padding: 0 !important;
+}
+
+body.pdf-preview-active .action-buttons.no-print {
+    padding: 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Overall PDF Container for Cermaq Ticket */
+.pdf-export-mode.result-card,
+.pdf-export-mode.full-report-page {
+    /* RESET ABSOLUTO PWA A HOJA BLANCA: */
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid #00b0b9 !important;
+    border-radius: 0 !important;
+    padding: 20px 15px !important;
+    /* Menos padding en movil para no ahogar texto */
+    margin: 0 !important;
+    box-shadow: inset 0 0 0 2px #00b0b9 !important;
+    max-height: none !important;
+    /* Eliminar scrollbars */
+    overflow: visible !important;
+    width: 100% !important;
+    min-height: 80vh !important;
+    /* Forzar Alto que emule Hoja Real en el celular */
+    color: #000 !important;
+}
+
 .pdf-export-mode .print-title-left {
     color: #00b0b9 !important;
-    font-size: 1.4rem !important;
+    font-size: 1.1rem !important;
+    /* Achicar un poco para que no choque con el logo */
+    line-height: 1.2;
 }
 
 .print-cermaq-logo-svg {
@@ -962,7 +1002,8 @@ button:active {
 
 .pdf-export-mode .print-cermaq-logo-svg {
     display: block !important;
-    width: 200px;
+    width: 140px;
+    /* Reducir de 200px a 140px para móviles */
     height: auto;
 }
 
@@ -973,8 +1014,8 @@ button:active {
 }
 
 .pdf-export-mode .print-estanque-title {
-    font-size: 1.8rem !important;
-    margin-top: 10px !important;
+    font-size: 1.6rem !important;
+    margin-top: 5px !important;
     color: #000 !important;
 }
 
@@ -983,7 +1024,8 @@ button:active {
     display: flex !important;
     flex-direction: column !important;
     gap: 0.5rem !important;
-    padding: 0 20px !important;
+    padding: 0 !important;
+    /* Quitar padding interno extra */
 }
 
 /* Forzar Texto a Negro Absoluto en Bloques y Valores */
@@ -1002,31 +1044,54 @@ button:active {
 .pdf-export-mode .print-row {
     display: flex !important;
     flex-direction: row !important;
-    justify-content: flex-start !important;
-    align-items: baseline !important;
-    border-bottom: none !important;
+    justify-content: space-between !important;
+    /* Distribuir extremos */
+    align-items: flex-start !important;
+    border-bottom: 1px dotted #ccc !important;
+    /* Ayuda visual a la lectura */
+    padding-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 .pdf-export-mode .print-row label {
-    width: 250px !important;
-    font-size: 1.1rem !important;
-    font-weight: 400 !important;
+    width: 45% !important;
+    /* Proporción dinámica en vez de 250px fijos */
+    font-size: 1rem !important;
+    font-weight: 600 !important;
     color: #000 !important;
     text-transform: none !important;
     letter-spacing: normal !important;
 }
 
 .pdf-export-mode .print-row p {
-    font-size: 1.1rem !important;
+    width: 55% !important;
+    text-align: right !important;
+    /* Alinear valor a la derecha */
+    font-size: 1rem !important;
     font-weight: 400 !important;
     color: #000 !important;
+    word-break: break-word;
+    /* Prevenir desborde de textos largos */
 }
 
 /* Overall PDF Container for Cermaq Ticket */
 .pdf-export-mode.result-card,
 .pdf-export-mode.full-report-page {
+    /* RESET ABSOLUTO PWA A HOJA BLANCA: */
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border: 1px solid #00b0b9 !important;
     border-radius: 0 !important;
-    padding: 30px !important;
+    padding: 20px 15px !important;
+    /* Menos padding en movil para no ahogar texto */
+    margin: 0 !important;
     box-shadow: inset 0 0 0 2px #00b0b9 !important;
+    max-height: none !important;
+    /* Eliminar scrollbars */
+    overflow: visible !important;
+    width: 100% !important;
+    min-height: 80vh !important;
+    /* Forzar Alto que emule Hoja Real en el celular */
+    color: #000 !important;
 }

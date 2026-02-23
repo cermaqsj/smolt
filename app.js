@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initManualGrid();
     registerServiceWorker();
     initParticles();
+
+    // Intentar forzar rotación nativa (Android)
+    if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock("portrait").catch(function () {
+            // Falla silenciosamente en browsers sin soporte (ej. iOS Safari)
+        });
+    }
 });
 
 // Función para inicializar la grilla manual de estanques

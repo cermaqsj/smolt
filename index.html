@@ -12,6 +12,12 @@
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
 
+    <!-- Forzar Verticalidad y App iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -28,6 +34,19 @@
     <div class="glass-bg"></div>
     <!-- Canvas animado de partículas (Super ligero) -->
     <canvas id="bg-particles"></canvas>
+
+    <!-- Bloqueo de Rotación Horizontal (Landscape Blocker) para iPhone -->
+    <div id="landscape-blocker">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <path d="M12 18h.01"></path>
+            <!-- Flecha de rotación -->
+            <path d="M16 4.5l2-2 2 2"></path>
+            <path d="M18 2.5v4"></path>
+        </svg>
+        <h2>Gire su dispositivo</h2>
+        <p>Esta aplicación está diseñada exclusivamente para usarse en modo vertical (portrait).</p>
+    </div>
 
     <!-- Splash Screen de Carga Inicial -->
     <div id="splash-screen" class="splash-screen">

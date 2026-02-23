@@ -512,7 +512,13 @@ button:active {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 16px 24px;
+    padding: 0 24px;
+    height: 56px;
+    /* Forzado explícito */
+    max-height: 56px;
+    /* Bloqueo Anti-Flex-Stretch iOS/Android */
+    min-height: 56px;
+    flex-shrink: 0;
     border-radius: 16px;
     font-size: 1rem;
     font-weight: 600;
@@ -533,7 +539,13 @@ button:active {
     background: rgba(15, 23, 42, 0.4);
     color: var(--text-primary);
     border: 1px solid var(--surface-border);
-    padding: 10px 16px;
+    padding: 0 16px;
+    height: 50px;
+    /* Forzado explícito compacto */
+    max-height: 50px;
+    /* Bloqueo Anti-Flex-Stretch iOS/Android */
+    min-height: 50px;
+    flex-shrink: 0;
     border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 500;

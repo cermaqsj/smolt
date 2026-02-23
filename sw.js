@@ -1,4 +1,4 @@
-const CACHE_NAME = 'estanques-scanner-v5';
+const CACHE_NAME = 'estanques-scanner-v6';
 const urlsToCache = [
     './',
     './index.html',

@@ -145,11 +145,31 @@ function setSyncStatus(text, type) {
     }
 }
 
-// Navegación
-function showView(viewId) {
+// Navegación con Historial Nativo (Previene Cierres por Botón Atrás en PWA)
+function showView(viewId, updateHistory = true) {
     document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
     document.getElementById(`view-${viewId}`).classList.add('active');
+
+    if (updateHistory) {
+        // Empujar al historial de navegación el ID de la vista actual
+        window.history.pushState({ view: viewId }, "", `#${viewId}`);
+    }
 }
+
+// Capturar evento cuando el usuario presiona el Botón "Atrás" de Android o Gestos de iOS
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.view) {
+        showView(event.state.view, false); // Restaura vista sin duplicar historial
+    } else {
+        showView('home', false); // Fallback: volver a casa
+    }
+
+    // Si estaba escaneando, detener camara
+    if (html5QrcodeScanner && html5QrcodeScanner.getState() === 2) {
+        html5QrcodeScanner.stop().catch(e => console.log(e));
+        html5QrcodeScanner.clear();
+    }
+});
 
 // Scanner Lógica
 function startScanner() {

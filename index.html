@@ -281,17 +281,26 @@
 
                 <!-- Botones de Confirmación PDF (Ocultos por defecto) -->
                 <div class="action-buttons no-print" id="preview-action-buttons" style="display: none;">
-                    <button class="btn-secondary" onclick="cancelPDFPreview()">
-                        Volver
+                    <button class="btn-secondary" onclick="showView('home')"
+                        style="flex: 1; padding: 0.8rem 0.5rem; font-size: 0.95rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3M9 9h6v6H9z"></path>
+                        </svg>
+                        <span style="display: none;">Escanear</span>
                     </button>
-                    <button class="btn-primary" onclick="confirmDownloadPDF()">
+                    <button class="btn-secondary" onclick="cancelPDFPreview()"
+                        style="flex: 1; padding: 0.8rem 0.5rem; font-size: 0.95rem;">
+                        Tarjeta
+                    </button>
+                    <button class="btn-primary" onclick="confirmDownloadPDF()" style="flex: 2; padding: 0.8rem 0.5rem;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Descargar PDF
+                        Descargar
                     </button>
                 </div>
             </div>

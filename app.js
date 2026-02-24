@@ -366,7 +366,11 @@ function displayEstanque(e, id) {
     }
     detailsContainer.appendChild(fragment);
 
+    // Automáticamente saltar al modo documento (A4 Blanco) según nuevo flujo solicitado
     showView('result');
+    setTimeout(() => {
+        previewPDF();
+    }, 50); // Pequeño retraso para permitir al DOM dibujar la vista base primero
 }
 
 // Toggle para expandir todos los detalles

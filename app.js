@@ -414,52 +414,70 @@ function exportAllToPDF() {
 
     audioExportPDF.play().catch(e => console.log('Audio autoplay prevented'));
     showToast('Generando reporte completo... esto tomará unos segundos.');
-    const container = document.getElementById('full-pdf-container');
-    container.innerHTML = ''; // Limpiar
+
+    // Crear un wrapper completamente fuera del flujo visual pero renderable por html2canvas
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 700px;
+        opacity: 0;
+        pointer-events: none;
+        z-index: -1;
+        background: #fff;
+    `;
 
     const baseTemplate = document.getElementById('pdf-content').cloneNode(true);
-    baseTemplate.classList.add('pdf-export-mode');
-    baseTemplate.style.zoom = '1'; // Reset
+    // Limpiar atributos que podrían interferir
+    baseTemplate.removeAttribute('id');
+    baseTemplate.style.zoom = '1';
     baseTemplate.style.transform = 'none';
 
-    // Mapear cabeceras a IDs de elementos
     estanquesData.forEach((estanque, idx) => {
-        if (!estanque.ID_QR && !estanque.ESTANQUE) return; // Salto vacíos
+        if (!estanque.ID_QR && !estanque.ESTANQUE) return; // Saltar vacíos
 
         const page = baseTemplate.cloneNode(true);
-        page.classList.add('full-report-page');
-        page.id = `page-${idx}`;
+        page.classList.add('pdf-export-mode', 'full-report-page');
+        page.id = `page-export-${idx}`;
 
         // Activar el logo vectorial corporativo
         const logo = page.querySelector('.print-cermaq-logo-svg');
         if (logo) logo.style.display = 'block';
 
+        page.querySelector('#r-estanque') && (page.querySelector('#r-estanque').id = `re-estanque-${idx}`);
         const estanqueName = getFlexibleValue(estanque, ['ESTANQUE', 'SECTION', 'ID_QR', 'ID']) || '--';
-        page.querySelector('#r-estanque').textContent = estanqueName;
+        const elEstanque = page.querySelector(`#re-estanque-${idx}`) || page.querySelector('[id^="r-estanque"]');
+        if (elEstanque) elEstanque.textContent = estanqueName;
+
+        const setField = (selector, value) => {
+            const el = page.querySelector(selector);
+            if (el) el.textContent = value;
+        };
 
         const especie = getFlexibleValue(estanque, ['ESPECIE', 'SPECIES']) || '--';
-        page.querySelector('#r-especie').textContent = especie;
+        setField('#r-especie', especie);
 
         const grupo = getFlexibleValue(estanque, ['GRUPO', 'GROUP']) || '--';
-        page.querySelector('#r-grupo').textContent = grupo;
+        setField('#r-grupo', grupo);
 
         const numPeces = getFlexibleValue(estanque, ['STOCK_ACTUAL', 'CURRENT STOCK', 'NUMERO_PECES']) || '--';
-        page.querySelector('#r-numero-peces').textContent = numPeces !== '--' ? numPeces.toLocaleString('es-CL') : '--';
+        setField('#r-numero-peces', numPeces !== '--' ? numPeces.toLocaleString('es-CL') : '--');
 
         const peso = getFlexibleValue(estanque, ['PESO_G', 'CURRENT WEIGT (GR)', 'CURRENT WEIGHT (GR)', 'PESO']) || '--';
-        page.querySelector('#r-peso').textContent = peso !== '--' ? peso + ' g' : '--';
+        setField('#r-peso', peso !== '--' ? peso + ' g' : '--');
 
         const densidad = getFlexibleValue(estanque, ['DENSIDAD_M3', 'CULTURE DENSITY (KG/M3)', 'DENSIDAD']) || '--';
-        page.querySelector('#r-densidad').textContent = densidad !== '--' ? densidad + ' kg/m³' : '--';
+        setField('#r-densidad', densidad !== '--' ? densidad + ' kg/m³' : '--');
 
         const origen = getFlexibleValue(estanque, ['ORIGEN', 'ORIGIN']) || '--';
-        page.querySelector('#r-origen').textContent = origen;
+        setField('#r-origen', origen);
 
         const calibre = getFlexibleValue(estanque, ['CALIBRE', 'CURRENT COEF. VAR. (%)', 'ÍNDICE DE CONDICIÓN (K)', 'ÍNDICE DE CONDICIÓN']) || '--';
-        page.querySelector('#r-calibre').textContent = calibre;
+        setField('#r-calibre', calibre);
 
         const otros = getFlexibleValue(estanque, ['OTROS', 'OBSERVACIONES', 'OBSERVATIONS']) || '--';
-        page.querySelector('#r-otros').textContent = otros;
+        setField('#r-otros', otros);
 
         const actualizado = getFlexibleValue(estanque, ['ACTUALIZADO', 'DATE', 'FECHA']) || '--';
         let fechaTxt = actualizado;
@@ -469,34 +487,47 @@ function exportAllToPDF() {
                 if (!isNaN(date)) fechaTxt = date.toLocaleDateString('es-CL');
             } catch (err) { }
         }
-        page.querySelector('#r-actualizado').textContent = fechaTxt;
+        setField('#r-actualizado', fechaTxt);
 
-        page.querySelector('.report-footer').style.display = 'block';
-        page.querySelector('#report-date').textContent = new Date().toLocaleString('es-CL');
+        const footer = page.querySelector('.report-footer');
+        if (footer) {
+            footer.style.display = 'block';
+            const dateEl = page.querySelector('#report-date');
+            if (dateEl) dateEl.textContent = new Date().toLocaleString('es-CL');
+        }
 
-        container.appendChild(page);
+        // Ocultar elementos que no deben ir al PDF
+        const toggleBtn = page.querySelector('#btn-toggle-details');
+        if (toggleBtn) toggleBtn.style.display = 'none';
+        const detailsContainer = page.querySelector('#all-details-container');
+        if (detailsContainer) detailsContainer.style.display = 'none';
+
+        wrapper.appendChild(page);
     });
 
-    container.style.display = 'block';
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.top = '0';
-    container.style.width = '700px';
-    container.style.backgroundColor = '#fff';
+    document.body.appendChild(wrapper);
 
     const opt = {
-        margin: [10, 10, 10, 10], // Márgenes seguros
-        filename: `Reporte_Total_Estanques.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 1.5, useCORS: true, letterRendering: true, windowWidth: 700 }, // scale 1.5
+        margin: [8, 8, 8, 8],
+        filename: `Reporte_Total_Estanques_CERMAQ.pdf`,
+        image: { type: 'jpeg', quality: 0.97 },
+        html2canvas: {
+            scale: 1.5,
+            useCORS: true,
+            letterRendering: true,
+            windowWidth: 700,
+            backgroundColor: '#ffffff'
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        pagebreak: { mode: ['css', 'legacy'], before: '.full-report-page' }
     };
 
-    html2pdf().set(opt).from(container).save().then(() => {
-        container.style.display = 'none';
-        container.innerHTML = '';
-        showToast('Reporte Total Exportado');
+    html2pdf().set(opt).from(wrapper).save().then(() => {
+        document.body.removeChild(wrapper);
+        showToast('✅ Reporte Total exportado correctamente');
+    }).catch(err => {
+        document.body.removeChild(wrapper);
+        showToast('Error generando PDF: ' + err.message);
     });
 }
 

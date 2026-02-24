@@ -846,11 +846,23 @@ button:active {
 /* Full report overrides */
 .full-report-page {
     page-break-after: always;
+    page-break-before: always;
+    break-before: page;
+    break-after: page;
     padding: 40px;
+    width: 700px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.full-report-page:first-child {
+    page-break-before: auto;
+    break-before: auto;
 }
 
 .full-report-page:last-child {
     page-break-after: auto;
+    break-after: auto;
 }
 
 /* Print Header Customization */
@@ -957,12 +969,17 @@ body.pdf-preview-active .app-container {
 
 body.pdf-preview-active #view-result {
     padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow-x: hidden !important;
 }
 
 body.pdf-preview-active .action-buttons.no-print {
     padding: 20px;
     background: #f8fafc;
     border-top: 1px solid #e2e8f0;
+    width: 100%;
 }
 
 /* Hard-Fix Legibilidad Modo Oscuro en la Botonera Inferior */

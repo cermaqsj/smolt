@@ -294,10 +294,10 @@ function displayEstanque(e, id) {
     document.getElementById('r-numero-peces').textContent = numPeces !== '--' ? numPeces.toLocaleString('es-CL') : '--';
 
     const peso = getFlexibleValue(e, ['PESO_G', 'CURRENT WEIGT (GR)', 'CURRENT WEIGHT (GR)', 'PESO']) || '--';
-    document.getElementById('r-peso').textContent = peso !== '--' ? peso + ' g' : '--';
+    document.getElementById('r-peso').textContent = peso !== '--' ? peso : '--';
 
     const densidad = getFlexibleValue(e, ['DENSIDAD_M3', 'CULTURE DENSITY (KG/M3)', 'DENSIDAD']) || '--';
-    document.getElementById('r-densidad').textContent = densidad !== '--' ? densidad + ' kg/m³' : '--';
+    document.getElementById('r-densidad').textContent = densidad !== '--' ? densidad : '--';
 
     const origen = getFlexibleValue(e, ['ORIGEN', 'ORIGIN']) || '--';
     document.getElementById('r-origen').textContent = origen;
@@ -418,13 +418,12 @@ function exportAllToPDF() {
     // Crear un wrapper completamente fuera del flujo visual pero renderable por html2canvas
     const wrapper = document.createElement('div');
     wrapper.style.cssText = `
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 700px;
-        opacity: 0;
         pointer-events: none;
-        z-index: -1;
+        z-index: -9999;
         background: #fff;
     `;
 
@@ -465,10 +464,10 @@ function exportAllToPDF() {
         setField('#r-numero-peces', numPeces !== '--' ? numPeces.toLocaleString('es-CL') : '--');
 
         const peso = getFlexibleValue(estanque, ['PESO_G', 'CURRENT WEIGT (GR)', 'CURRENT WEIGHT (GR)', 'PESO']) || '--';
-        setField('#r-peso', peso !== '--' ? peso + ' g' : '--');
+        setField('#r-peso', peso !== '--' ? peso : '--');
 
         const densidad = getFlexibleValue(estanque, ['DENSIDAD_M3', 'CULTURE DENSITY (KG/M3)', 'DENSIDAD']) || '--';
-        setField('#r-densidad', densidad !== '--' ? densidad + ' kg/m³' : '--');
+        setField('#r-densidad', densidad !== '--' ? densidad : '--');
 
         const origen = getFlexibleValue(estanque, ['ORIGEN', 'ORIGIN']) || '--';
         setField('#r-origen', origen);

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impresión de Códigos QR - CERMAQ</title>
+    <style>
+        /* Base / Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Contenedor que simula la Hoja Tamaño Carta (Letter) */
+        .page {
+            width: 215.9mm;
+            /* 8.5 inches */
+            min-height: 279.4mm;
+            /* 11 inches */
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 10mm;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: min-content;
+            gap: 5mm;
+        }
+
+        /* Estilo Individual del QR / Tarjeta */
+        .qr-card {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+        }
+
+        .qr-card img {
+            width: 100%;
+            max-width: 120px;
+            height: auto;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        .qr-title {
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
+            border-top: 1px solid #eee;
+            padding-top: 5px;
+            width: 100%;
+        }
+
+        .cermaq-logo {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Controles de Ayuda para pantalla (No se imprimen) */
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .btn-print {
+            background-color: #00b0b9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-print:hover {
+            background-color: #008f96;
+        }
+
+        /* Reglas Específicas para Imprimir (Ctrl+P) */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+
+            .controls {
+                display: none !important;
+            }
+
+            .page {
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                border: none;
+            }
+
+            .qr-card {
+                /* Para que no se dividan las tarjetas entre hojas si hubiesen más */
+                page-break-inside: avoid;
+                border-color: #000;
+                /* Borde más fuerte al imprimir */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Panel de controles flotante -->
+    <div class="controls no-print">
+        <button class="btn-print" onclick="window.print()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Imprimir QRs (Ctrl+P)
+        </button>
+        <p style="font-size: 12px; color: #666; margin-top: 10px;">Tamaño: Carta (Letter)</p>
+    </div>
+
+    <!-- Hoja de Impresión -->
+    <div class="page" id="qr-container">
+        <!-- Los QRs se inyectan acá por JS -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('qr-container');
+            const totalEstanques = 20;
+
+            for (let i = 1; i <= totalEstanques; i++) {
+                // Formato S01, S02... S20
+                const numStr = i.toString().padStart(2, '0');
+                const id = `S${numStr}`;
+
+                // Construir la tarjeta
+                const card = document.createElement('div');
+                card.className = 'qr-card';
+                card.innerHTML = `
+                    <div class="cermaq-logo">CERMAQ</div>
+                    <!-- Se asume que los QR están en la carpeta /QR con extensión .png -->
+                    <img src="./QR/${id}.png" alt="Código QR ${id}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjE1IiB5PSI1MCIgZmlsbD0iI2EwYTBhMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEycHgiPk5vIEltYWdlbjwvdGV4dD48L3N2Zz4';">
+                    <div class="qr-title">ESTANQUE ${id}</div>
+                `;
+                container.appendChild(card);
+            }
+        });
+    </script>
+</body>
+
+</html>

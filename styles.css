@@ -985,26 +985,45 @@ body.pdf-preview-active .btn-secondary svg {
     background: #ffffff !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border: 1px solid #00b0b9 !important;
+    border: 2px solid #00b0b9 !important;
+    /* BORDE FINO TURQUESA */
     border-radius: 0 !important;
-    padding: 20px 15px !important;
-    /* Menos padding en movil para no ahogar texto */
-    margin: 0 !important;
-    box-shadow: inset 0 0 0 2px #00b0b9 !important;
+    padding: 30px 40px !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    /* QUITAR CUALQUIER SOMBRA */
     max-height: none !important;
     /* Eliminar scrollbars */
     overflow: visible !important;
-    width: 100% !important;
-    min-height: 80vh !important;
-    /* Forzar Alto que emule Hoja Real en el celular */
+
+    /* FORZAR TAMAÑO A4 ESTÁTICO DE FORMA INMUTABLE AL TELÉFONO */
+    width: 700px !important;
+    max-width: 700px !important;
+    min-width: 700px !important;
+    height: auto !important;
+    min-height: 800px !important;
+
+    page-break-inside: avoid !important;
+    box-sizing: border-box !important;
     color: #000 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+.pdf-export-mode .print-header-top {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    margin-bottom: 20px !important;
+    border-bottom: none !important;
 }
 
 .pdf-export-mode .print-title-left {
     color: #00b0b9 !important;
     font-size: 1.1rem !important;
-    /* Achicar un poco para que no choque con el logo */
-    line-height: 1.2;
+    font-weight: bold !important;
+    margin: 0 !important;
+    padding-top: 5px !important;
+    text-transform: uppercase !important;
 }
 
 .print-cermaq-logo-svg {
@@ -1015,26 +1034,54 @@ body.pdf-preview-active .btn-secondary svg {
 
 .pdf-export-mode .print-cermaq-logo-svg {
     display: block !important;
-    width: 140px;
-    /* Reducir de 200px a 140px para móviles */
+    width: 130px;
     height: auto !important;
-    /* Forzar auto para mantener proporción */
-    max-height: 40px !important;
-    /* Limite altitud para no aplastar el grid si Webkit falla el calc */
+    max-height: 35px !important;
     object-fit: contain !important;
-    /* Evitar estiramiento en Safari / iOS */
 }
 
-.print-estanque-title {
-    text-align: center;
-    font-weight: 400 !important;
-    letter-spacing: 2px;
+.pdf-export-mode .print-header {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
 }
 
 .pdf-export-mode .print-estanque-title {
-    font-size: 1.6rem !important;
-    margin-top: 5px !important;
+    font-family: "Times New Roman", Times, serif !important;
+    font-size: 1.8rem !important;
+    font-weight: normal !important;
+    text-align: center;
+    margin: 15px 0 35px 0 !important;
     color: #000 !important;
+    letter-spacing: 2px !important;
+}
+
+.pdf-export-mode .print-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+    padding: 0 !important;
+    border-bottom: none !important;
+}
+
+.pdf-export-mode .print-row label {
+    font-family: "Times New Roman", Times, serif !important;
+    width: 40% !important;
+    font-size: 1.1rem !important;
+    color: #000 !important;
+    text-align: left !important;
+    font-weight: normal !important;
+}
+
+.pdf-export-mode .print-row p {
+    font-family: "Times New Roman", Times, serif !important;
+    width: 60% !important;
+    font-size: 1.1rem !important;
+    color: #000 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    font-weight: normal !important;
 }
 
 /* Adjustments for print rows */

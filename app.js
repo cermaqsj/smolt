@@ -318,74 +318,11 @@ function displayEstanque(e, id) {
     }
     document.getElementById('r-actualizado').textContent = fechaTxt;
 
-    // Cerrar siempre el desplegable de "Todos los datos" al buscar uno nuevo
-    const detailsContainer = document.getElementById('all-details-container');
-    const iconToggle = document.getElementById('icon-toggle-details');
-
-    // Mostramos como grid siempre, pero lo ocultamos por default
-    detailsContainer.style.display = 'none';
-    detailsContainer.innerHTML = '';
-    iconToggle.style.transform = 'rotate(0deg)';
-
-    // Construir la tabla dinámica de todas las claves que manda el Sheets
-    const fragment = document.createDocumentFragment();
-
-    // Ignorar las claves que ya están permanentemente visibles arriba para no duplicar
-    const rawIgnoreKeys = ['ESTANQUE', 'ID_QR', 'SECTION', 'ID', 'ESPECIE', 'SPECIES', 'GRUPO', 'GROUP', 'STOCK_ACTUAL', 'CURRENT STOCK', 'NUMERO_PECES', 'PESO_G', 'CURRENT WEIGT (GR)', 'CURRENT WEIGHT (GR)', 'PESO', 'DENSIDAD_M3', 'CULTURE DENSITY (KG/M3)', 'DENSIDAD', 'ORIGEN', 'ORIGIN', 'CALIBRE', 'CURRENT COEF. VAR. (%)', 'ÍNDICE DE CONDICIÓN (K)', 'ÍNDICE DE CONDICIÓN', 'OTROS', 'OBSERVACIONES', 'OBSERVATIONS', 'ACTUALIZADO', 'DATE', 'FECHA'];
-    const ignoreKeys = rawIgnoreKeys.map(k => k.toUpperCase().trim());
-
-    for (const [key, value] of Object.entries(e)) {
-        const cleanKey = key.toUpperCase().trim();
-
-        if (value !== "" && !ignoreKeys.includes(cleanKey)) {
-            const dataGroup = document.createElement('div');
-            dataGroup.className = 'data-group';
-
-            const label = document.createElement('label');
-            label.textContent = cleanKey.replace(/_/g, ' ');
-
-            const p = document.createElement('p');
-
-            // Formatear fechas si detecta la clave
-            if (cleanKey === 'ACTUALIZADO') {
-                try {
-                    const date = new Date(value);
-                    if (!isNaN(date)) p.textContent = date.toLocaleDateString('es-CL');
-                    else p.textContent = value;
-                } catch (err) { p.textContent = value; }
-            } else {
-                p.textContent = value;
-            }
-
-            p.style.color = "white"; // Asegurar que todo se vea blanco
-
-            dataGroup.appendChild(label);
-            dataGroup.appendChild(p);
-            fragment.appendChild(dataGroup);
-        }
-    }
-    detailsContainer.appendChild(fragment);
-
     // Automáticamente saltar al modo documento (A4 Blanco) según nuevo flujo solicitado
     showView('result');
     setTimeout(() => {
         previewPDF();
     }, 50); // Pequeño retraso para permitir al DOM dibujar la vista base primero
-}
-
-// Toggle para expandir todos los detalles
-function toggleAllDetails() {
-    const container = document.getElementById('all-details-container');
-    const icon = document.getElementById('icon-toggle-details');
-
-    if (container.style.display === 'none') {
-        container.style.display = 'grid';
-        icon.style.transform = 'rotate(180deg)';
-        icon.style.transition = 'transform 0.3s';
-    } else {
-        container.style.display = 'none';
-        icon.style.transform = 'rotate(0deg)';
-    }
 }
 
 // Utilidad Toast
@@ -396,25 +333,22 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// Variables globales temporales para UI de Previsualización PDF
-let detailsWasHidden = true;
-
 // Previsualización Física en Pantalla
 function previewPDF() {
     if (!currentEstanque) return;
 
     const element = document.getElementById('pdf-content');
-    const footer = element.querySelector('.report-footer');
-    const detailsContainer = document.getElementById('all-details-container');
-
-    detailsWasHidden = detailsContainer.style.display === 'none';
-    if (detailsWasHidden) detailsContainer.style.display = 'grid';
 
     // Activa clases CSS de PDF que vuelven todo blanco a impresión negra real
     element.classList.add('pdf-export-mode');
     document.body.classList.add('pdf-preview-active');
-    footer.style.display = 'block';
-    document.getElementById('report-date').textContent = new Date().toLocaleString('es-CL');
+
+    // Escala del documento para previsualizarse en pantalla del teléfono 
+    // sin alterar sus dimensiones estrictas físicas originales de 700px (A4)
+    if (window.innerWidth < 740) {
+        const zoomLevel = (window.innerWidth - 30) / 700; // factor de reducción visual
+        element.style.zoom = zoomLevel;
+    }
 
     // Scrollear al inicio para que el usuario aprecie el ticket
     document.getElementById('view-result').scrollTop = 0;
@@ -424,14 +358,11 @@ function previewPDF() {
 function cancelPDFPreview() {
     const element = document.getElementById('pdf-content');
     if (!element) return;
-    const footer = element.querySelector('.report-footer');
-    const detailsContainer = document.getElementById('all-details-container');
 
-    // Revertir CSS de Impresión
+    // Revertir CSS de Impresión y visualización
     element.classList.remove('pdf-export-mode');
     document.body.classList.remove('pdf-preview-active');
-    if (footer) footer.style.display = 'none';
-    if (detailsContainer && detailsWasHidden) detailsContainer.style.display = 'none';
+    element.style.zoom = ''; // Resetear escala a normalidad
 }
 
 // Exportación PDF Individual Definitiva
@@ -441,21 +372,36 @@ function confirmDownloadPDF() {
     audioExportPDF.play().catch(e => console.log('Audio autoplay prevented'));
     const element = document.getElementById('pdf-content');
 
+    // Clon estricto: Lo mandamos fuera de la pantalla limitando su ancho exacto (700px) para ignorar el tamaño del celular
+    const staticClone = element.cloneNode(true);
+    staticClone.style.zoom = '1'; // Evitar que PDF herede la escala miniaturizada del celular
+    staticClone.style.transform = 'none';
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'absolute';
+    wrapper.style.left = '-9999px';
+    wrapper.style.top = '0';
+    wrapper.style.width = '700px';
+    wrapper.style.backgroundColor = '#fff';
+    wrapper.appendChild(staticClone);
+    document.body.appendChild(wrapper);
+
     showToast('Procesando Documento... por favor espere.');
 
     const opt = {
-        margin: 10,
+        margin: [5, 5, 5, 5], // Márgenes minimizados (top, left, bottom, right)
         filename: `Reporte...Estanque_${currentEstanque.ID_QR || currentEstanque.ESTANQUE}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 700 }, // windowWidth emparejado al clon
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    html2pdf().set(opt).from(element).save().then(() => {
+    html2pdf().set(opt).from(staticClone).save().then(() => {
         showToast('PDF Descargado exitosamente');
-        // No cancelamos la previsualización aquí para que el usuario pueda seguir leyendo el ticket si quiere
+        document.body.removeChild(wrapper);
     }).catch(err => {
         showToast('Error generando PDF: ' + err.message);
+        document.body.removeChild(wrapper);
     });
 }
 
@@ -473,6 +419,8 @@ function exportAllToPDF() {
 
     const baseTemplate = document.getElementById('pdf-content').cloneNode(true);
     baseTemplate.classList.add('pdf-export-mode');
+    baseTemplate.style.zoom = '1'; // Reset
+    baseTemplate.style.transform = 'none';
 
     // Mapear cabeceras a IDs de elementos
     estanquesData.forEach((estanque, idx) => {
@@ -530,13 +478,19 @@ function exportAllToPDF() {
     });
 
     container.style.display = 'block';
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '700px';
+    container.style.backgroundColor = '#fff';
 
     const opt = {
-        margin: 10,
+        margin: [5, 5, 5, 5],
         filename: `Reporte_Total_Estanques.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 700 }, // 700px estrictos
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     html2pdf().set(opt).from(container).save().then(() => {

@@ -1080,30 +1080,30 @@ body.pdf-preview-active .btn-secondary svg {
     margin-bottom: 8px !important;
     padding: 0 10px !important;
     border-bottom: 1px dotted #ccc !important;
-    /* Línea sutil como guía de lectura */
+    box-sizing: border-box !important;
+    width: 100% !important;
 }
 
 .pdf-export-mode .print-row label {
     font-family: "Times New Roman", Times, serif !important;
-    width: 250px !important;
-    min-width: 250px !important;
+    flex: 0 0 240px !important;
     font-size: 14px !important;
     color: #000 !important;
     text-align: left !important;
     font-weight: bold !important;
     line-height: 1.4 !important;
     padding-bottom: 4px !important;
+    margin: 0 !important;
 }
 
 .pdf-export-mode .print-row p {
     font-family: "Times New Roman", Times, serif !important;
-    width: 400px !important;
-    max-width: 400px !important;
+    flex: 1 !important;
+    max-width: 350px !important;
     font-size: 14px !important;
     color: #000 !important;
     margin: 0 !important;
     text-align: right !important;
-    /* Alinear valor a la derecha como un recibo formal */
     font-weight: normal !important;
     line-height: 1.4 !important;
     word-wrap: break-word !important;

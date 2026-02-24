@@ -1073,37 +1073,37 @@ body.pdf-preview-active .btn-secondary svg {
 }
 
 .pdf-export-mode .print-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    margin-bottom: 8px !important;
+    padding: 0 10px !important;
     border-bottom: 1px dotted #ccc !important;
-}
-
-.pdf-export-mode .print-row td {
-    padding: 4px 0 !important;
-    vertical-align: top !important;
-}
-
-.pdf-export-mode .print-row td:first-child {
-    width: 250px !important;
-}
-
-.pdf-export-mode .print-row td:last-child {
-    width: 400px !important;
-    text-align: right !important;
+    /* Línea sutil como guía de lectura */
 }
 
 .pdf-export-mode .print-row label {
     font-family: "Times New Roman", Times, serif !important;
+    width: 250px !important;
+    min-width: 250px !important;
     font-size: 14px !important;
     color: #000 !important;
+    text-align: left !important;
     font-weight: bold !important;
     line-height: 1.4 !important;
-    margin: 0 !important;
+    padding-bottom: 4px !important;
 }
 
 .pdf-export-mode .print-row p {
     font-family: "Times New Roman", Times, serif !important;
+    width: 400px !important;
+    max-width: 400px !important;
     font-size: 14px !important;
     color: #000 !important;
     margin: 0 !important;
+    text-align: right !important;
+    /* Alinear valor a la derecha como un recibo formal */
     font-weight: normal !important;
     line-height: 1.4 !important;
     word-wrap: break-word !important;
@@ -1111,9 +1111,11 @@ body.pdf-preview-active .btn-secondary svg {
 
 /* Adjustments for print rows */
 .pdf-export-mode .print-data-grid {
-    display: table !important;
-    width: 100% !important;
-    margin-top: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    padding: 0 !important;
+    /* Quitar padding interno extra */
 }
 
 /* Forzar Texto a Negro Absoluto en Bloques y Valores */

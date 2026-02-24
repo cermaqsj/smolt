@@ -1047,10 +1047,10 @@ body.pdf-preview-active .btn-secondary svg {
 
 .pdf-export-mode .print-estanque-title {
     font-family: "Times New Roman", Times, serif !important;
-    font-size: 1.8rem !important;
+    font-size: 1.6rem !important;
     font-weight: normal !important;
     text-align: center;
-    margin: 15px 0 35px 0 !important;
+    margin: 10px 0 25px 0 !important;
     color: #000 !important;
     letter-spacing: 2px !important;
 }
@@ -1058,30 +1058,38 @@ body.pdf-preview-active .btn-secondary svg {
 .pdf-export-mode .print-row {
     display: flex !important;
     flex-direction: row !important;
-    justify-content: flex-start !important;
-    align-items: center !important;
-    margin-bottom: 12px !important;
-    padding: 0 !important;
-    border-bottom: none !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    margin-bottom: 8px !important;
+    padding: 0 10px !important;
+    border-bottom: 1px dotted #ccc !important;
+    /* Línea sutil como guía de lectura */
 }
 
 .pdf-export-mode .print-row label {
     font-family: "Times New Roman", Times, serif !important;
-    width: 40% !important;
-    font-size: 1.1rem !important;
+    width: 250px !important;
+    min-width: 250px !important;
+    font-size: 14px !important;
     color: #000 !important;
     text-align: left !important;
-    font-weight: normal !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+    padding-bottom: 4px !important;
 }
 
 .pdf-export-mode .print-row p {
     font-family: "Times New Roman", Times, serif !important;
-    width: 60% !important;
-    font-size: 1.1rem !important;
+    width: 400px !important;
+    max-width: 400px !important;
+    font-size: 14px !important;
     color: #000 !important;
     margin: 0 !important;
-    text-align: left !important;
+    text-align: right !important;
+    /* Alinear valor a la derecha como un recibo formal */
     font-weight: normal !important;
+    line-height: 1.4 !important;
+    word-wrap: break-word !important;
 }
 
 /* Adjustments for print rows */

@@ -388,11 +388,11 @@ function confirmDownloadPDF() {
     showToast('Procesando Documento... por favor espere.');
 
     const opt = {
-        margin: [5, 5, 5, 5], // Márgenes minimizados (top, left, bottom, right)
+        margin: [10, 10, 10, 10], // Márgenes seguros
         filename: `Reporte...Estanque_${currentEstanque.ID_QR || currentEstanque.ESTANQUE}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 700 }, // windowWidth emparejado al clon
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        html2canvas: { scale: 1.5, useCORS: true, letterRendering: true, windowWidth: 700 }, // scale 1.5 y windowWidth 700 evitan cortes laterales
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, // Forzando encaje estático
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
@@ -485,10 +485,10 @@ function exportAllToPDF() {
     container.style.backgroundColor = '#fff';
 
     const opt = {
-        margin: [5, 5, 5, 5],
+        margin: [10, 10, 10, 10], // Márgenes seguros
         filename: `Reporte_Total_Estanques.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 700 }, // 700px estrictos
+        html2canvas: { scale: 1.5, useCORS: true, letterRendering: true, windowWidth: 700 }, // scale 1.5
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };

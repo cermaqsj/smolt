@@ -202,84 +202,99 @@
                         <h2 id="r-estanque" class="print-estanque-title">--</h2>
                     </div>
 
-                    <div class="data-grid print-data-grid">
-                        <div class="data-group full-width print-row">
-                            <label>Especie :</label>
-                            <p id="r-especie">--</p>
-                        </div>
-                        <div class="data-group full-width print-row">
-                            <label>Grupo :</label>
-                            <p id="r-grupo">--</p>
-                        </div>
-                        <div class="data-group full-width print-row">
-                            <label>Numero de peces :</label>
-                            <p id="r-numero-peces">--</p>
-                        </div>
-                        <div class="data-group full-width print-row">
-                            <label>Peso:</label>
-                            <p id="r-peso">--</p>
-                        </div>
-                        <div class="data-group full-width print-row">
-                            <label>Densidad:</label>
-                            <p id="r-densidad">--</p>
-                        </div>
-                        <div class="data-group full-width print-row">
-                            <label>Origen:</label>
-                            <p id="r-origen">--</p>
-                        </div>
-                        <div class="data-group full-width print-row">
-                            <label>Calibre:</label>
-                            <p id="r-calibre">--</p>
-                        </div>
-                        <div class="data-group full-width print-row">
-                            <label>Otros:</label>
-                            <p id="r-otros">--</p>
-                        </div>
-                        <div class="data-group full-width" style="display: none;">
-                            <label>Actualizado:</label>
-                            <p id="r-actualizado">--</p>
-                        </div>
-                    </div>
-
-                    <button id="btn-toggle-details" class="btn-outlined full-width" onclick="toggleAllDetails()">
-                        Ver Detalle Completo de Sheets
-                        <svg id="icon-toggle-details" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </button>
-
-                    <div id="all-details-container" class="data-grid"
-                        style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--surface-border);">
-                        <!-- Poblado por JS con el mismo formato -->
-                    </div>
-
-                    <!-- Footer del reporte para el PDF -->
-                    <div class="report-footer" style="display: none;">
-                        <p>Generado vía App de Monitoreo CERMAQ</p>
-                        <p id="report-date"></p>
+                    <table class="data-grid print-data-grid" style="width: 100%; border-collapse: collapse;">
+                        <tr class="data-group full-width print-row">
+                            <td style="width: 250px;"><label>Especie :</label></td>
+                            <td style="width: 400px;">
+                                <p id="r-especie">--</p>
+                            </td>
+                        </tr>
+                        <tr class="data-group full-width print-row">
+                            <td><label>Grupo :</label></td>
+                            <td>
+                                <p id="r-grupo">--</p>
+                            </td>
+                        </tr>
+                        <tr class="data-group full-width print-row">
+                            <td><label>Numero de peces :</label></td>
+                            <td>
+                                <p id="r-numero-peces">--</p>
+                            </td>
+                        </tr>
+                        <tr class="data-group full-width print-row">
+                            <td><label>Peso:</label></td>
+                            <td>
+                                <p id="r-peso">--</p>
+                            </td>
+                        </tr>
+                        <tr class="data-group full-width print-row">
+                            <td><label>Densidad:</label></td>
+                            <td>
+                                <p id="r-densidad">--</p>
+                            </td>
+                        </tr>
+                        <tr class="data-group full-width print-row">
+                            <td><label>Origen:</label></td>
+                            <td>
+                                <p id="r-origen">--</p>
+                            </td>
+                        </tr>
+                        <tr class="data-group full-width print-row">
+                            <td><label>Calibre:</label></td>
+                            <td>
+                                <p id="r-calibre">--</p>
+                            </td>
+                        </tr>
+                        <tr class="data-group full-width print-row">
+                            <td><label>Otros:</label></td>
+                            <td>
+                                <p id="r-otros">--</p>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="data-group full-width" style="display: none;">
+                        <label>Actualizado:</label>
+                        <p id="r-actualizado">--</p>
                     </div>
                 </div>
 
-                <div class="action-buttons no-print" id="preview-action-buttons">
-                    <button class="btn-secondary" onclick="showView('home')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3M9 9h6v6H9z"></path>
-                        </svg>
-                        Escanear Otro
-                    </button>
-                    <button class="btn-primary" onclick="confirmDownloadPDF()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        Descargar PDF
-                    </button>
+                <button id="btn-toggle-details" class="btn-outlined full-width" onclick="toggleAllDetails()">
+                    Ver Detalle Completo de Sheets
+                    <svg id="icon-toggle-details" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+
+                <div id="all-details-container" class="data-grid"
+                    style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--surface-border);">
+                    <!-- Poblado por JS con el mismo formato -->
+                </div>
+
+                <!-- Footer del reporte para el PDF -->
+                <div class="report-footer" style="display: none;">
+                    <p>Generado vía App de Monitoreo CERMAQ</p>
+                    <p id="report-date"></p>
                 </div>
             </div>
+
+            <div class="action-buttons no-print" id="preview-action-buttons">
+                <button class="btn-secondary" onclick="showView('home')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3M9 9h6v6H9z"></path>
+                    </svg>
+                    Escanear Otro
+                </button>
+                <button class="btn-primary" onclick="confirmDownloadPDF()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Descargar PDF
+                </button>
+            </div>
+        </div>
 
         </div>
     </main>

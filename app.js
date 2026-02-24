@@ -416,29 +416,22 @@ function previewPDF() {
     footer.style.display = 'block';
     document.getElementById('report-date').textContent = new Date().toLocaleString('es-CL');
 
-    // Transicionar Botonera
-    document.getElementById('normal-action-buttons').style.display = 'none';
-    document.getElementById('preview-action-buttons').style.display = 'flex';
-
     // Scrollear al inicio para que el usuario aprecie el ticket
     document.getElementById('view-result').scrollTop = 0;
 }
 
-// Cancelar Previsualización y Regresar a la Ficha Interactiva
+// Cancelar Previsualización internamente al salir de vista (ej: Escanear Otro)
 function cancelPDFPreview() {
     const element = document.getElementById('pdf-content');
+    if (!element) return;
     const footer = element.querySelector('.report-footer');
     const detailsContainer = document.getElementById('all-details-container');
 
     // Revertir CSS de Impresión
     element.classList.remove('pdf-export-mode');
     document.body.classList.remove('pdf-preview-active');
-    footer.style.display = 'none';
-    if (detailsWasHidden) detailsContainer.style.display = 'none';
-
-    // Restaurar Botonera
-    document.getElementById('normal-action-buttons').style.display = 'flex';
-    document.getElementById('preview-action-buttons').style.display = 'none';
+    if (footer) footer.style.display = 'none';
+    if (detailsContainer && detailsWasHidden) detailsContainer.style.display = 'none';
 }
 
 // Exportación PDF Individual Definitiva
@@ -460,10 +453,9 @@ function confirmDownloadPDF() {
 
     html2pdf().set(opt).from(element).save().then(() => {
         showToast('PDF Descargado exitosamente');
-        cancelPDFPreview(); // Restaurar el layout al terminar
+        // No cancelamos la previsualización aquí para que el usuario pueda seguir leyendo el ticket si quiere
     }).catch(err => {
         showToast('Error generando PDF: ' + err.message);
-        cancelPDFPreview();
     });
 }
 

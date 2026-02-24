@@ -965,6 +965,19 @@ body.pdf-preview-active .action-buttons.no-print {
     border-top: 1px solid #e2e8f0;
 }
 
+/* Hard-Fix Legibilidad Modo Oscuro en la Botonera Inferior */
+body.pdf-preview-active .btn-secondary {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    /* Texto Oscuro SIEMPRE para contraste */
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.pdf-preview-active .btn-secondary svg {
+    color: #64748b !important;
+}
+
 /* Overall PDF Container for Cermaq Ticket */
 .pdf-export-mode.result-card,
 .pdf-export-mode.full-report-page {
@@ -1004,7 +1017,12 @@ body.pdf-preview-active .action-buttons.no-print {
     display: block !important;
     width: 140px;
     /* Reducir de 200px a 140px para móviles */
-    height: auto;
+    height: auto !important;
+    /* Forzar auto para mantener proporción */
+    max-height: 40px !important;
+    /* Limite altitud para no aplastar el grid si Webkit falla el calc */
+    object-fit: contain !important;
+    /* Evitar estiramiento en Safari / iOS */
 }
 
 .print-estanque-title {
